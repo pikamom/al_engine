@@ -2,4 +2,4 @@ orchestration:
   folder_path: "src/orchestrate"
 scrape:
   metal_futures:
-    number_of_backtrack_days: 20
+    number_of_backtrack_days: 5

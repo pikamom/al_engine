@@ -36,7 +36,7 @@ class ScrapeMetal(Module):
 
         daily_data = []
         back_tracked_days = 0
-        number_of_backtrack_days = self.settings["scrape"]["metal_futures"]["number_of_backtrack_day"]
+        number_of_backtrack_days = self.settings["scrape"]["metal_futures"]["number_of_backtrack_days"]
         logger.debug(f"Number of backtracked days is [{number_of_backtrack_days}]")
 
         while back_tracked_days < number_of_backtrack_days:
