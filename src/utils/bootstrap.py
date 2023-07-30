@@ -8,7 +8,7 @@ import logging
 import textwrap
 import yaml
 
-logger = logging.getLogger()
+logger = logging.getLogger("al_engine")
 
 
 def Boostrap() -> None:

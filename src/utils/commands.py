@@ -7,7 +7,7 @@ from src.utils.settings import SETTINGS
 import textwrap
 from datetime import datetime
 
-logger = logging.getLogger()
+logger = logging.getLogger("al_engine")
 
 
 class Orchestrator:

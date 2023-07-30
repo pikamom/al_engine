@@ -1,7 +1,7 @@
 import pandas as pd
 import logging
 
-logger = logging.getLogger()
+logger = logging.getLogger("al_engine")
 
 
 class Saver:

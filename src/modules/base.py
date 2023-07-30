@@ -3,7 +3,7 @@ from abc import abstractmethod, ABC
 import textwrap
 from src.utils.settings import SETTINGS
 
-logger = logging.getLogger()
+logger = logging.getLogger("al_engine")
 
 
 class Module(ABC):

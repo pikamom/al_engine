@@ -6,7 +6,7 @@ from src.utils.saver import Saver
 import logging
 import os
 
-logger = logging.getLogger()
+logger = logging.getLogger("al_engine")
 
 
 class ScrapeMetal(Module):
