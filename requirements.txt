@@ -5,3 +5,4 @@ pyyaml==6.0
 uuid
 textwrap3
 seaborn==0.12.2
+missingno
