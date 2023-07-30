@@ -1,0 +1,2 @@
+orchestration:
+  scrape: ["scrape_metal_futures"]
