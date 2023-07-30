@@ -2,6 +2,7 @@ import logging
 import os
 from datetime import datetime, timedelta
 from typing import Dict
+import missingno as msno
 
 import pandas as pd
 import requests
@@ -80,6 +81,7 @@ class PreProcess(Module):
 
         logger.debug("Reading in CCFI...")
         ccfi = pd.read_csv("data/raw/ccfi.csv")
+
         ccfi["DATE"] = pd.to_datetime(ccfi["date"], format="%Y/%m/%d")
         ccfi = ccfi.drop(["date", "Unnamed: 0"], axis=1)
         ccfi.sort_values(by=["DATE"], inplace=True, ascending=True)
@@ -147,7 +149,7 @@ class PreProcess(Module):
         )
         logger.info("Additional data elements reading process complete!")
 
-        # merge oil and al
+        logger.info("Merging all dataframes...")
         df_merged = al_price
         for table in [
             oil,
@@ -161,25 +163,58 @@ class PreProcess(Module):
             industry,
             acc,
         ]:
+            logger.info(f"Merging Additional tables into [df_merged]...")
             df_merged = df_merged.merge(table, on="DATE", how="left")
 
-        import matplotlib.pyplot as plt
-        from matplotlib.pyplot import figure
-
+        logger.info("Renaming columns...")
         df_merged.rename(
             columns={"SETTLEMENTPRICE_x": "AL_PRICE", "SETTLEMENTPRICE_y": "CU_PRICE"},
             inplace=True,
         )
+
+        logger.info("Plotting missing values indication plot...")
+        msno.matrix(df_merged)
+        Saver.save_plots("missing_value_indication")
+
+        logger.info("Filling in industrial index...")
         df_merged["INDUSTRIAL_INDEX"] = df_merged["INDUSTRIAL_INDEX"].bfill()
+
+        logger.info("Filling in industrial index...")
         figure(figsize=(12, 5), dpi=80, linewidth=10)
         plt.plot(df_merged["DATE"], df_merged["INDUSTRIAL_INDEX"])
         plt.title("INDUSTRIAL_INDEX Raw Data with Missing Values")
         plt.xlabel("Time", fontsize=14)
         plt.ylabel("Index", fontsize=14)
+        Saver.save_plots("industrial_index")
 
-        Saver.save_plots("pikamom is stupid")
+        merged_11 = None
+
+        logger.info(f"Starting Pre-processing of the industrial index")
+        start_date = pd.to_datetime("2022-03-01")
+        end_date = pd.to_datetime("2023-03-01")
+        selected_rows = df_merged[
+            (df_merged["DATE"] >= start_date) & (df_merged["DATE"] <= end_date)
+        ]
+        average_Industrial_value = selected_rows["INDUSTRIAL_INDEX"].mean()
+        logger.debug(
+            f"Average value between {start_date} and {end_date}: {average_Industrial_value}"
+        )
+        df_merged["INDUSTRIAL_INDEX"].fillna(average_Industrial_value, inplace=True)
+
+        logger.info(
+            "Fill the null values in CCFI_INDEX with the average of the available two consecutive weekly data"
+        )
+        df_merged["CCFI_INDEX_NEW"] = (
+            df_merged["CCFI_INDEX"].bfill() + df_merged["CCFI_INDEX"].ffill()
+        ) / 2
+        df_merged.drop("CCFI_INDEX", axis=1, inplace=True)
+
+        logger.info(
+            "fill the null values in SCFI_INDEX with the average of the available two consecutive weekly data"
+        )
+        df_merged["SCFI_INDEX_NEW"] = (
+            df_merged["SCFI_INDEX"].bfill() + df_merged["SCFI_INDEX"].ffill()
+        ) / 2
+        df_merged.drop("SCFI_INDEX", axis=1, inplace=True)
 
         print(df_merged.head(5))
-
-
-# %%
