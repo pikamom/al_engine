@@ -8,8 +8,8 @@ logger = logging.getLogger()
 
 
 class Module(ABC):
-    def __init__(self,module_name) -> None:
-        self.module_name=module_name
+    def __init__(self, module_name) -> None:
+        self.module_name = module_name
         pass
 
     @abstractmethod

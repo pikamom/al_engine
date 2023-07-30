@@ -5,7 +5,6 @@ from colorlog import ColoredFormatter
 
 
 class LoggerSetup:
-
     def __init__(self) -> None:
         logger = logging.getLogger()
         # add in console output handler
@@ -30,4 +29,3 @@ class LoggerSetup:
 
 
 LoggerSetup()
-
