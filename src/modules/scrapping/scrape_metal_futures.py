@@ -1,10 +1,12 @@
-from src.modules.base import Module
-import requests
-import pandas as pd
-from datetime import datetime, timedelta
-from src.utils.saver import Saver
 import logging
 import os
+from datetime import datetime, timedelta
+
+import pandas as pd
+import requests
+
+from src.modules.base import Module
+from src.utils.saver import Saver
 
 logger = logging.getLogger("al_engine")
 

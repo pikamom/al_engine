@@ -1,6 +1,8 @@
-import pandas as pd
 import logging
+
 import matplotlib.pyplot as plt
+import pandas as pd
+
 from src.utils.settings import SETTINGS
 
 logger = logging.getLogger("al_engine")

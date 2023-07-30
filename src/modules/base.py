@@ -1,6 +1,7 @@
 import logging
-from abc import abstractmethod, ABC
 import textwrap
+from abc import ABC, abstractmethod
+
 from src.utils.settings import SETTINGS
 
 logger = logging.getLogger("al_engine")
