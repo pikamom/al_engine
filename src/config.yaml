@@ -1,2 +1,2 @@
 orchestration:
-  scrape: ["scrape_metal_futures"]
+  folder_path: "src/orchestrate"
