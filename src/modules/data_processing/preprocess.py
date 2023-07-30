@@ -2,12 +2,13 @@ import logging
 import os
 from datetime import datetime, timedelta
 from typing import Dict
-import missingno as msno
 
+import matplotlib.pyplot as plt
+import missingno as msno
 import pandas as pd
 import requests
-import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
+
 from src.modules.base import Module
 from src.utils.saver import Saver
 
@@ -187,8 +188,6 @@ class PreProcess(Module):
         plt.ylabel("Index", fontsize=14)
         Saver.save_plots("industrial_index")
 
-        merged_11 = None
-
         logger.info(f"Starting Pre-processing of the industrial index")
         start_date = pd.to_datetime("2022-03-01")
         end_date = pd.to_datetime("2023-03-01")
@@ -216,5 +215,39 @@ class PreProcess(Module):
             df_merged["SCFI_INDEX"].bfill() + df_merged["SCFI_INDEX"].ffill()
         ) / 2
         df_merged.drop("SCFI_INDEX", axis=1, inplace=True)
+
+        logger.info("Plotting missing values indication plot again...")
+        msno.matrix(df_merged)
+        Saver.save_plots("missing_value_indication_after_index_ccfi_scfi_update")
+
+        logger.info("Plotting Aluminium Corporation of China Stock prices...")
+        plt.plot(df_merged["ACC_CLOSE"], label="ACC_CLOSE")
+        plt.plot(df_merged["ACC_OPEN"], label="ACC_OPEN")
+        plt.legend()
+        Saver.save_plots("acc_stock_price")
+
+        logger.info("Plotting Aluminium Corporation of China Stock prices...")
+        df_merged = df_merged.sort_values("DATE")
+        plt.plot(df_merged["DATE"], df_merged["ACC_VOLUME"], label="ACC_VOLUME")
+        Saver.save_plots("acc_stock_vol")
+
+        logger.debug(
+            "Impute the missing values using Rolling Window Method(Linear Interpolation"
+        )
+        df_merged["ACC_OPEN"] = df_merged["ACC_OPEN"].interpolate(method="linear")
+        df_merged["ACC_CLOSE"] = df_merged["ACC_CLOSE"].interpolate(method="linear")
+        df_merged["ACC_VOLUME"] = df_merged["ACC_VOLUME"].interpolate(method="linear")
+
+        logger.info("Plotting missing values indication plot again...")
+        msno.matrix(df_merged)
+        Saver.save_plots("missing_value_indication_after_acc_update")
+
+        logger.debug("Backfilling all the other columns...")
+        df_merged["OIL_PRICE"] = df_merged["OIL_PRICE"].bfill()
+        df_merged["COAL"] = df_merged["COAL"].bfill()
+        df_merged["US_DOLLAR"] = df_merged["US_DOLLAR"].bfill()
+        df_merged["AUS_DOLLAR"] = df_merged["AUS_DOLLAR"].bfill()
+        df_merged["LONDON_AL_PRICE"] = df_merged["LONDON_AL_PRICE"].bfill()
+        df_merged["LONDON_AL_VOL"] = df_merged["LONDON_AL_VOL"].bfill()
 
         print(df_merged.head(5))
