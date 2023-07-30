@@ -9,7 +9,6 @@
 .csv
 .xlsx
 .ipynb
-data/
 
 # logging folder
 logs/
