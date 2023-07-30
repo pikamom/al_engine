@@ -16,7 +16,7 @@ class ScrapeMetal(Module):
 
     def run(self) -> None:
         """
-        Webscrape metals future prices from shanghai futures exchange
+        Webscrape metals futures prices from shanghai futures exchange
         """
 
         headers_for_use = {
@@ -74,4 +74,4 @@ class ScrapeMetal(Module):
         metal_futures_prices_all = pd.concat(daily_data)
 
         logger.info(f"Saving the final prices dataframe...")
-        Saver.save_csv(metal_futures_prices_all, "future_prices.csv")
+        Saver.save_csv(metal_futures_prices_all, "futures_prices.csv")
