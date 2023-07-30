@@ -36,7 +36,7 @@ class ScrapeMetal(Module):
 
         daily_data = []
         back_tracked_days = 0
-        number_of_backtrack_days = 20
+        number_of_backtrack_days = self.settings["scrape"]["metal_futures"]["number_of_backtrack_day"]
         logger.debug(f"Number of backtracked days is [{number_of_backtrack_days}]")
 
         while back_tracked_days < number_of_backtrack_days:
@@ -73,8 +73,3 @@ class ScrapeMetal(Module):
 
         logger.info(f"Saving the final prices dataframe...")
         Saver.save_csv(metal_futures_prices_all, "future_prices.csv")
-
-
-if __name__ == "__main__":
-    test_class = Test()
-    test_class._run()
