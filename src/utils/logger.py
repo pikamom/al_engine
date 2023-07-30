@@ -6,7 +6,7 @@ from colorlog import ColoredFormatter
 
 class LoggerSetup:
     def __init__(self, log_file: str) -> None:
-        logger = logging.getLogger()
+        logger = logging.getLogger("al_engine")
 
         # add in console output handler + file handler
         console_output = logging.StreamHandler(sys.stderr)
