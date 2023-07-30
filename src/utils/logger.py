@@ -5,12 +5,13 @@ from colorlog import ColoredFormatter
 
 
 class LoggerSetup:
-    def __init__(self) -> None:
+    def __init__(self, log_file: str) -> None:
 
         logger = logging.getLogger()
 
-        # add in console output handler
+        # add in console output handler + file handler
         console_output = logging.StreamHandler(sys.stderr)
+        file_handler = logging.FileHandler(log_file)
 
         # formatter
         formatter = ColoredFormatter(
@@ -27,7 +28,8 @@ class LoggerSetup:
         )
 
         console_output.setFormatter(formatter)
-        
+
         # add in console output handler
         logger.addHandler(console_output)
+        logger.addHandler(file_handler)
         logger.setLevel(logging.DEBUG)
