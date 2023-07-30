@@ -20,42 +20,6 @@ class PreProcess(Module):
         module_name = os.path.basename(__file__).replace(".py", "")
         super().__init__(module_name)
 
-    def _extract_metal_price(self, metal: str) -> Dict:
-        all_metal_futures = pd.read_csv("data/raw/futures prices.csv")
-        all_metal_futures["DATE"] = pd.to_datetime(
-            all_metal_futures["date"], format="%d/%m/%Y"
-        )
-        all_metal_futures = all_metal_futures.drop(
-            ["TRADINGDAY", "id", "Unnamed: 0"], axis=1
-        )
-        metal_prices = all_metal_futures[
-            all_metal_futures.INSTRUMENTID.str.startswith(metal)
-        ].reset_index()
-        metal_prices["exec_year"] = "20" + metal_prices.INSTRUMENTID.str[2:4]
-        metal_prices["exec_month"] = metal_prices.INSTRUMENTID.str[-2:]
-        metal_prices["exec_date"] = (
-            metal_prices["exec_year"] + "-" + metal_prices["exec_month"] + "-" + "15"
-        )
-        metal_prices["exec_date"] = pd.to_datetime(metal_prices["exec_date"])
-        metal_prices["exec_begin_date"] = metal_prices["exec_date"] - pd.DateOffset(
-            months=1
-        )
-        metal_prices = metal_prices[
-            (metal_prices["DATE"] > metal_prices["exec_begin_date"])
-            & (metal_prices["DATE"] <= metal_prices["exec_date"])
-        ]
-        metal_prices = (
-            metal_prices.reset_index(drop=True)
-            .sort_values("DATE")
-            .drop(["exec_year", "exec_month", "exec_date", "exec_begin_date"], axis=1)
-        )
-        metal_prices = metal_prices[
-            metal_prices.SETTLEMENTPRICE.isnull() == False
-        ].reset_index(drop=True)
-        metal_prices = metal_prices[["DATE", "SETTLEMENTPRICE"]]
-
-        return metal_prices
-
     def run(self):
         logger.info("Starting to extract metal futures prices...")
         logger.debug("Extracting Aluminium metal future prices...")
@@ -281,6 +245,42 @@ class PreProcess(Module):
 
         Saver.save_csv(df_merged, "processed_data", "processed")
 
+    def _extract_metal_price(self, metal: str) -> Dict:
+        all_metal_futures = pd.read_csv("data/raw/futures prices.csv")
+        all_metal_futures["DATE"] = pd.to_datetime(
+            all_metal_futures["date"], format="%d/%m/%Y"
+        )
+        all_metal_futures = all_metal_futures.drop(
+            ["TRADINGDAY", "id", "Unnamed: 0"], axis=1
+        )
+        metal_prices = all_metal_futures[
+            all_metal_futures.INSTRUMENTID.str.startswith(metal)
+        ].reset_index()
+        metal_prices["exec_year"] = "20" + metal_prices.INSTRUMENTID.str[2:4]
+        metal_prices["exec_month"] = metal_prices.INSTRUMENTID.str[-2:]
+        metal_prices["exec_date"] = (
+            metal_prices["exec_year"] + "-" + metal_prices["exec_month"] + "-" + "15"
+        )
+        metal_prices["exec_date"] = pd.to_datetime(metal_prices["exec_date"])
+        metal_prices["exec_begin_date"] = metal_prices["exec_date"] - pd.DateOffset(
+            months=1
+        )
+        metal_prices = metal_prices[
+            (metal_prices["DATE"] > metal_prices["exec_begin_date"])
+            & (metal_prices["DATE"] <= metal_prices["exec_date"])
+        ]
+        metal_prices = (
+            metal_prices.reset_index(drop=True)
+            .sort_values("DATE")
+            .drop(["exec_year", "exec_month", "exec_date", "exec_begin_date"], axis=1)
+        )
+        metal_prices = metal_prices[
+            metal_prices.SETTLEMENTPRICE.isnull() == False
+        ].reset_index(drop=True)
+        metal_prices = metal_prices[["DATE", "SETTLEMENTPRICE"]]
+
+        return metal_prices
+    
     def _calculate_rsi(self, prices, period=14):
         logger.debug("Calculate daily price changes")
         delta = prices.diff()
