@@ -2,6 +2,7 @@ from src.modules.base import Module
 import requests
 import pandas as pd
 from datetime import datetime, timedelta
+from src.utils.saver import Saver
 import logging
 import os
 
@@ -66,6 +67,12 @@ class Test(Module):
 
             today = yesterday
             back_tracked_days += 1
+
+        logger.info(f"Concatenating a the list of daily metal prices dataframe...")
+        metal_futures_prices_all = pd.concat(daily_data)
+
+        logger.info(f"Saving the final prices dataframe...")
+        Saver.save_csv(metal_futures_prices_all, "future_prices.csv")
 
 
 if __name__ == "__main__":
