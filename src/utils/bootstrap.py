@@ -27,7 +27,7 @@ def Boostrap() -> None:
     ###########################
     Boostrap task in progress...
     run id: {run_id}
-    run time: {time_now}
+    run start time: {time_now}
     run folder created at: {run_folder_path}
     log file stored in: {log_file}
     ###########################
@@ -47,7 +47,7 @@ def create_run_meta_data() -> Union[str, str, str, str]:
 
     run_meta_data = {
         "run_id": run_id,
-        "time_now": time_now,
+        "start_time": time_now,
         "today_date": today_date,
         "run_folder_path": run_folder_path,
         "log_file": log_file,

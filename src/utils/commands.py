@@ -3,6 +3,9 @@ import importlib.util
 import yaml
 import click
 import logging
+from src.utils.settings import SETTINGS
+import textwrap
+from datetime import datetime
 
 logger = logging.getLogger()
 
@@ -36,4 +39,18 @@ class Orchestrator:
         for module in orchestrator_file.list_modules:
             logger.info(f"Queueing modules execution for module [{module}]...")
             module()._run()
-        logger.debug("All modules execution complete and is successful!")
+
+        time_now=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        logger_message = f"""
+
+        ###########################
+        All modules execution complete and is successful!
+        run id: {SETTINGS["run_meta_data"]["run_id"]}
+        run start time: {SETTINGS["run_meta_data"]["start_time"]}
+        run finish time: {time_now}
+        ###########################
+        """
+
+        # log the run meta data
+        logger_message = textwrap.dedent(logger_message)
+        logger.debug(logger_message)
