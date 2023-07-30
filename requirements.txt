@@ -1,0 +1,2 @@
+colorlog=6.7.0
+numpy=1.25.1

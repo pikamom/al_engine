@@ -1,0 +1,11 @@
+# logging files
+*.log
+
+# remove all __pycache__ file
+*__pycache__*
+*.pyc
+
+.DS_Store
+.csv
+.ipynb
+data/
