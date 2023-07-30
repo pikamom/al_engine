@@ -18,11 +18,11 @@ class PreProcess(Module):
         super().__init__(module_name)
 
     def _extract_metal_price(self, metal: str) -> Dict:
-        metal_futures = pd.read_csv("data/raw/futures prices.csv")
-        metal_futures["DATE"] = pd.to_datetime(metal_futures["date"], format="%d/%m/%Y")
-        metal_futures = metal_futures.drop(["TRADINGDAY", "id", "Unnamed: 0"], axis=1)
-        metal_prices = metal_futures[
-            metal_futures.INSTRUMENTID.str.startswith(metal)
+        all_metal_futures = pd.read_csv("data/raw/futures prices.csv")
+        all_metal_futures["DATE"] = pd.to_datetime(all_metal_futures["date"], format="%d/%m/%Y")
+        all_metal_futures = all_metal_futures.drop(["TRADINGDAY", "id", "Unnamed: 0"], axis=1)
+        metal_prices = all_metal_futures[
+            all_metal_futures.INSTRUMENTID.str.startswith(metal)
         ].reset_index()
         metal_prices["exec_year"] = "20" + metal_prices.INSTRUMENTID.str[2:4]
         metal_prices["exec_month"] = metal_prices.INSTRUMENTID.str[-2:]
@@ -50,27 +50,35 @@ class PreProcess(Module):
         return metal_prices
 
     def run(self):
-        futures = pd.read_csv("data/raw/futures prices.csv")
-
-        # merged_11 fully joined, cleaned
-        # merged scaled: merged_11 + standardised
-
+        logger.info("Starting to extract metal futures prices...")
+        logger.debug("Extracting Aluminium metal future prices...")
         al_price = self._extract_metal_price("al")
+        logger.debug("Extracting Copper metal future prices...")
         cu_price = self._extract_metal_price("cu")
+        logger.info("Metal futures prices extract complete!")
 
-        print(al_price)
-
+        
+        logger.info("Reading in additional data...")
+        logger.debug("Reading in oil prices...")
         oil = pd.read_csv("data/raw/crude oil price.csv")
+        logger.debug("Reading in coal prices...")
         coal = pd.read_csv("data/raw/Coal_05_19_23-04_02_13.csv")
+        logger.debug("Reading in CCFI...")
         ccfi = pd.read_csv("data/raw/ccfi.csv")
+        logger.debug("Reading in SCFI prices...")
         scfi = pd.read_csv("data/raw/scfi.csv")
-        US = pd.read_csv("data/raw/us-dollar-yuan-exchange-rate-historical-chart.csv")
-        AUS = pd.read_csv(
+        logger.debug("Reading in exchange rates...")
+        usd_to_yuan_exchange = pd.read_csv("data/raw/us-dollar-yuan-exchange-rate-historical-chart.csv")
+        aud_to_yuan_exchange = pd.read_csv(
             "data/raw/australian-us-dollar-exchange-rate-historical-chart.csv"
         )
+        logger.debug("Reading in london AL prices...")
         london = pd.read_csv("data/raw/London Aluminium Historical Data.csv")
+        logger.debug("Reading in industry data...")
         industry = pd.read_csv("data/raw/industrial-production-historical-chart.csv")
+        logger.debug("Reading in ACC company stocks...")
         acc = pd.read_csv("data/raw/AL_corporation_of_china.csv", header=1)
+        logger.info("Additional data elements reading process complete!")
 
         # oil
         oil["DATE"] = pd.to_datetime(oil["date"], format="%Y/%m/%d")
@@ -99,16 +107,16 @@ class PreProcess(Module):
         coal.rename(columns={"Close": "COAL"}, inplace=True)
 
         # US
-        US["DATE"] = pd.to_datetime(US["date"], format="%Y/%m/%d")
-        US = US.drop(["date"], axis=1)
-        US.sort_values(by=["DATE"], inplace=True, ascending=True)
-        US.rename(columns={" value": "US_DOLLAR"}, inplace=True)
+        usd_to_yuan_exchange["DATE"] = pd.to_datetime(usd_to_yuan_exchange["date"], format="%Y/%m/%d")
+        usd_to_yuan_exchange = usd_to_yuan_exchange.drop(["date"], axis=1)
+        usd_to_yuan_exchange.sort_values(by=["DATE"], inplace=True, ascending=True)
+        usd_to_yuan_exchange.rename(columns={" value": "US_DOLLAR"}, inplace=True)
 
         # AUS
-        AUS["DATE"] = pd.to_datetime(AUS["date"], format="%Y/%m/%d")
-        AUS = AUS.drop(["date"], axis=1)
-        AUS.sort_values(by=["DATE"], inplace=True, ascending=True)
-        AUS.rename(columns={" value": "AUS_DOLLAR"}, inplace=True)
+        aud_to_yuan_exchange["DATE"] = pd.to_datetime(aud_to_yuan_exchange["date"], format="%Y/%m/%d")
+        aud_to_yuan_exchange = aud_to_yuan_exchange.drop(["date"], axis=1)
+        aud_to_yuan_exchange.sort_values(by=["DATE"], inplace=True, ascending=True)
+        aud_to_yuan_exchange.rename(columns={" value": "AUS_DOLLAR"}, inplace=True)
 
         # london
         london["DATE"] = pd.to_datetime(london["Date"], format="%d/%m/%Y")
@@ -156,10 +164,10 @@ class PreProcess(Module):
         merged_5 = pd.merge(merged_4, coal, on="DATE", how="left")
 
         # with the exchange rate yuan/US dollar
-        merged_6 = pd.merge(merged_5, US, on="DATE", how="left")
+        merged_6 = pd.merge(merged_5, usd_to_yuan_exchange, on="DATE", how="left")
 
         # merge merged_6 and the exchange rate Australian dollar/yuan
-        merged_7 = pd.merge(merged_6, AUS, on="DATE", how="left")
+        merged_7 = pd.merge(merged_6, aud_to_yuan_exchange, on="DATE", how="left")
 
         # merge merged_6 and the copper prices
         merged_8 = pd.merge(merged_7, cu_price, on="DATE", how="left")
