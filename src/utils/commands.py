@@ -44,7 +44,7 @@ class Orchestrator:
         logger_message = f"""
 
         ###########################
-        All modules execution complete and is successful!
+        All modules' execution completed and are successful!
         run id: {SETTINGS["run_meta_data"]["run_id"]}
         run start time: {SETTINGS["run_meta_data"]["start_time"]}
         run finish time: {time_now}
