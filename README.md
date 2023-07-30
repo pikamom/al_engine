@@ -13,16 +13,20 @@ The main aim is to predict Aluminium pricing and utilise the decision engine to 
 
 ### Section 2 - Installation Quick-Start
 
+> in project root folder
+
 ```
-# in project root folder
 pip install -r requirements.txt
 ```
 
+
 ### Section 3 - Running the Code
 The project had been set-up in a way that CLI tool is provided to access different modules, an example is shown below
+
+> syntax: python -m src.run {orchestrator name}
+> make sure required raw data is already in place
+
 ```
-# syntax: python -m src.run {orchestrator name}
-# make sure required 
 python -m src.run preprocess
 ```
 
