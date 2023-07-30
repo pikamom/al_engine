@@ -13,7 +13,7 @@ class Test(Module):
         module_name = os.path.basename(__file__).replace(".py", "")
         super().__init__(module_name)
 
-    def run(self):
+    def run(self) -> None:
         """
         Webscrape metals future prices from shanghai futures exchange
         """
