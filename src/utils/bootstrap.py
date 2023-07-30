@@ -15,6 +15,7 @@ def Boostrap():
     today_date=datetime.now().strftime("%Y%m%d")
 
     logger_message=f"""
+    
     ###########################
     Boostrap task in progress...
     run id: {run_id}

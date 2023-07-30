@@ -18,9 +18,9 @@ class Module(ABC):
 
     def _run(self):
         logger_message=f"""
-        ###########################
+        ######################################################
         Starting modules [{self.module_name}]...
-        ###########################
+        ######################################################
         """
         logger_message = textwrap.dedent(logger_message)
         logger.debug(logger_message)
@@ -28,9 +28,9 @@ class Module(ABC):
         self.run()
 
         logger_message=f"""
-        ###########################
+        ######################################################
         Modules [{self.module_name}] completed successfully!
-        ###########################
+        ######################################################
         """
         logger_message = textwrap.dedent(logger_message)
         logger.debug(logger_message)

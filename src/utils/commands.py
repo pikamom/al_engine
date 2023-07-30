@@ -32,5 +32,5 @@ class Orchestrator:
         logger.info("Starting all modules execution...")
         for module in orchestrator_file.list_modules:
             logger.info(f"Queueing modules execution for module [{module}]...")
-            module().run()
+            module()._run()
         logger.debug("All modules execution complete and is successful!")
