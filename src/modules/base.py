@@ -1,6 +1,5 @@
 import logging
 from abc import abstractmethod, ABC
-import os
 
 import src.utils.logger
 
