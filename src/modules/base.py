@@ -1,5 +1,6 @@
 import logging
 from abc import abstractmethod, ABC
+import yaml
 
 logger = logging.getLogger()
 
@@ -7,7 +8,8 @@ logger = logging.getLogger()
 class Module(ABC):
     def __init__(self, module_name) -> None:
         self.module_name = module_name
-        pass
+        with open("src/config.yaml","r") as file:
+            self.settings=yaml.safe_load(file)
 
     @abstractmethod
     def run(self) -> None:
