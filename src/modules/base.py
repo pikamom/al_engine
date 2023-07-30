@@ -1,16 +1,15 @@
 import logging
 from abc import abstractmethod, ABC
 import textwrap
-import yaml
+from src.utils.settings import SETTINGS
 
 logger = logging.getLogger()
 
 
 class Module(ABC):
     def __init__(self, module_name) -> None:
-        self.module_name = module_name
-        with open("src/config.yaml","r") as file:
-            self.settings=yaml.safe_load(file)
+        self.module_name=module_name
+        self.settings=SETTINGS
 
     @abstractmethod
     def run(self) -> None:
@@ -29,7 +28,7 @@ class Module(ABC):
         self.run()
 
         logger_message=f"""
-        
+
         ######################################################
         Modules [{self.module_name}] completed successfully!
         ######################################################
