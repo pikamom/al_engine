@@ -8,12 +8,12 @@ import logging
 import textwrap
 import yaml
 
-logger=logging.getLogger()
+logger = logging.getLogger()
 
-def Boostrap()->None:
 
+def Boostrap() -> None:
     # run meta data
-    run_id, time_now, run_folder_path, log_file=create_run_meta_data()
+    run_id, time_now, run_folder_path, log_file = create_run_meta_data()
 
     # make a run folder + logs folder within the run folder
     os.makedirs(run_folder_path)
@@ -22,7 +22,7 @@ def Boostrap()->None:
     # set up logger
     LoggerSetup(log_file=log_file)
 
-    logger_message=f"""
+    logger_message = f"""
 
     ###########################
     Boostrap task in progress...
@@ -38,19 +38,19 @@ def Boostrap()->None:
     logger.debug(logger_message)
 
 
-def create_run_meta_data() -> Union[str, str,str,str]:
-
-    run_id=uuid.uuid4()
+def create_run_meta_data() -> Union[str, str, str, str]:
+    run_id = uuid.uuid4()
     time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    today_date=datetime.now().strftime("%Y%m%d")
-    run_folder_path=f"runs/{today_date}/{run_id}"
-    log_file=f"{run_folder_path}/logs/run.log"
+    today_date = datetime.now().strftime("%Y%m%d")
+    run_folder_path = f"runs/{today_date}/{run_id}"
+    log_file = f"{run_folder_path}/logs/run.log"
 
-    run_meta_data= {"run_id": run_id,
+    run_meta_data = {
+        "run_id": run_id,
         "time_now": time_now,
-        "today_date":today_date,
-        "run_folder_path":run_folder_path,
-        "log_file":log_file
+        "today_date": today_date,
+        "run_folder_path": run_folder_path,
+        "log_file": log_file,
     }
 
     SETTINGS["run_meta_data"] = run_meta_data

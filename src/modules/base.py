@@ -8,15 +8,15 @@ logger = logging.getLogger()
 
 class Module(ABC):
     def __init__(self, module_name) -> None:
-        self.module_name=module_name
-        self.settings=SETTINGS
+        self.module_name = module_name
+        self.settings = SETTINGS
 
     @abstractmethod
     def run(self) -> None:
         pass
 
     def _run(self):
-        logger_message=f"""
+        logger_message = f"""
         
         ######################################################
         Starting modules [{self.module_name}]...
@@ -27,7 +27,7 @@ class Module(ABC):
 
         self.run()
 
-        logger_message=f"""
+        logger_message = f"""
 
         ######################################################
         Modules [{self.module_name}] completed successfully!
