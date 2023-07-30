@@ -13,3 +13,7 @@ data/
 
 # logging folder
 logs/
+*.log
+
+# run folder
+runs/
