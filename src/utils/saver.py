@@ -17,7 +17,7 @@ class Saver:
             filename = filename + ".csv"
 
         logger.debug(
-            f"Saving file with file name [{filename}] at location [src/data/{filename}]..."
+            f"Saving file with file name [{filename}] at location [data/{filename}]..."
         )
-        df_to_save.to_csv(f"src/data/{filename}")
+        df_to_save.to_csv(f"data/{filename}")
         logger.info("Save successful!")

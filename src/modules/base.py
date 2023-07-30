@@ -1,5 +1,6 @@
 import logging
 from abc import abstractmethod, ABC
+import textwrap
 import yaml
 
 logger = logging.getLogger()
@@ -21,12 +22,17 @@ class Module(ABC):
         Starting modules [{self.module_name}]...
         ###########################
         """
-
-        # log the run meta data
+        logger_message = textwrap.dedent(logger_message)
         logger.debug(logger_message)
 
         self.run()
 
-        logger.info(f"End of module {self.module_name}...")
+        logger_message=f"""
+        ###########################
+        Modules [{self.module_name}] completed successfully!
+        ###########################
+        """
+        logger_message = textwrap.dedent(logger_message)
+        logger.debug(logger_message)
 
         pass
