@@ -24,6 +24,7 @@ pip install -r requirements.txt
 The project had been set-up in a way that CLI tool is provided to access different modules, an example is shown below
 
 > syntax: python -m src.run {orchestrator name}
+> 
 > make sure required raw data is already in place
 
 ```
