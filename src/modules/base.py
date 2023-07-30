@@ -1,8 +1,6 @@
 import logging
 from abc import abstractmethod, ABC
 
-import src.utils.logger
-
 logger = logging.getLogger()
 
 
