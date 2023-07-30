@@ -3,13 +3,12 @@ from datetime import datetime
 import os
 import uuid
 import logging
+import textwrap
 
 logger=logging.getLogger()
 LoggerSetup()
 
 def Boostrap():
-    logger.debug("Starting the boostrap task...")
-    
     # run meta data
     run_id=uuid.uuid4()
     time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -17,17 +16,16 @@ def Boostrap():
 
     logger_message=f"""
     ###########################
-
-    Boostrap task im progress...
+    Boostrap task in progress...
     run id: {run_id}
     run time: {time_now}
     run folder created at: runs/{today_date}/{run_id}
-
     ###########################
     """
 
     # log the run meta data
-    logger.info(logger_message)
+    logger_message = textwrap.dedent(logger_message)
+    logger.debug(logger_message)
 
     # make a run folder
     logger.info(f"Creating the run folder at [runs/{today_date}/{run_id}]")

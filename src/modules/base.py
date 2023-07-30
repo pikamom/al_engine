@@ -16,7 +16,14 @@ class Module(ABC):
         pass
 
     def _run(self):
-        logger.info(f"Start of module {self.module_name}...")
+        logger_message=f"""
+        ###########################
+        Starting modules [{self.module_name}]...
+        ###########################
+        """
+
+        # log the run meta data
+        logger.debug(logger_message)
 
         self.run()
 
