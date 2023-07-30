@@ -5,7 +5,8 @@ from typing import Dict
 
 import pandas as pd
 import requests
-
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import figure
 from src.modules.base import Module
 from src.utils.saver import Saver
 
@@ -68,7 +69,7 @@ class PreProcess(Module):
         oil["DATE"] = pd.to_datetime(oil["date"], format="%Y/%m/%d")
         oil = oil.drop(["date"], axis=1)
         oil.sort_values(by=["DATE"], inplace=True, ascending=True)
-        oil.rename(columns={" value": "PRICE"}, inplace=True)
+        oil.rename(columns={" value": "OIL_PRICE"}, inplace=True)
 
         logger.debug("Reading in coal prices...")
         coal = pd.read_csv("data/raw/Coal_05_19_23-04_02_13.csv")
@@ -87,7 +88,7 @@ class PreProcess(Module):
         logger.debug("Reading in SCFI prices...")
         scfi = pd.read_csv("data/raw/scfi.csv")
         scfi["DATE"] = pd.to_datetime(scfi["date"], format="%Y/%m/%d")
-        scfi = scfi.drop(["date"], axis=1)
+        scfi = scfi.drop(["date", "Unnamed: 0"], axis=1)
         scfi.sort_values(by=["DATE"], inplace=True, ascending=True)
         scfi.rename(columns={"scfi_index": "SCFI_INDEX"}, inplace=True)
 
@@ -147,54 +148,38 @@ class PreProcess(Module):
         logger.info("Additional data elements reading process complete!")
 
         # merge oil and al
-        merged_2 = pd.merge(al_price, oil, on="DATE", how="left")
-        merged_2.rename(columns={"PRICE": "OIL_PRICE"}, inplace=True)
-
-        # with scfi_index
-        merged_3 = pd.merge(merged_2, scfi, on="DATE", how="left")
-        merged_3.drop("Unnamed: 0", axis=1, inplace=True)
-
-        # with ccfi_index
-        merged_4 = pd.merge(merged_3, ccfi, on="DATE", how="left")
-
-        # with coal price
-        merged_5 = pd.merge(merged_4, coal, on="DATE", how="left")
-
-        # with the exchange rate yuan/US dollar
-        merged_6 = pd.merge(merged_5, usd_to_yuan_exchange, on="DATE", how="left")
-
-        # merge merged_6 and the exchange rate Australian dollar/yuan
-        merged_7 = pd.merge(merged_6, aud_to_yuan_exchange, on="DATE", how="left")
-
-        # merge merged_6 and the copper prices
-        merged_8 = pd.merge(merged_7, cu_price, on="DATE", how="left")
-
-        # merge merged_6 and the exchange rate Australian dollar/yuan
-        merged_9 = pd.merge(merged_8, london, on="DATE", how="left")
-
-        # merge merged_6 and the Industrial Index
-        merged_10 = pd.merge(merged_9, industry, on="DATE", how="left")
-
-        # merge merged_6 and information of Aluminium Corporation of China
-        merged_11 = pd.merge(merged_10, acc, on="DATE", how="left")
+        df_merged = al_price
+        for table in [
+            oil,
+            scfi,
+            ccfi,
+            coal,
+            usd_to_yuan_exchange,
+            aud_to_yuan_exchange,
+            cu_price,
+            london,
+            industry,
+            acc,
+        ]:
+            df_merged = df_merged.merge(table, on="DATE", how="left")
 
         import matplotlib.pyplot as plt
         from matplotlib.pyplot import figure
 
-        merged_11.rename(
+        df_merged.rename(
             columns={"SETTLEMENTPRICE_x": "AL_PRICE", "SETTLEMENTPRICE_y": "CU_PRICE"},
             inplace=True,
         )
-        merged_11["INDUSTRIAL_INDEX"] = merged_11["INDUSTRIAL_INDEX"].bfill()
+        df_merged["INDUSTRIAL_INDEX"] = df_merged["INDUSTRIAL_INDEX"].bfill()
         figure(figsize=(12, 5), dpi=80, linewidth=10)
-        plt.plot(merged_11["DATE"], merged_11["INDUSTRIAL_INDEX"])
+        plt.plot(df_merged["DATE"], df_merged["INDUSTRIAL_INDEX"])
         plt.title("INDUSTRIAL_INDEX Raw Data with Missing Values")
         plt.xlabel("Time", fontsize=14)
         plt.ylabel("Index", fontsize=14)
 
         Saver.save_plots("pikamom is stupid")
 
-        print(merged_11.head(5))
+        print(df_merged.head(5))
 
 
 # %%
