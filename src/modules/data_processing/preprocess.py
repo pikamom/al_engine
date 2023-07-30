@@ -168,6 +168,6 @@ class PreProcess(Module):
         plt.xlabel('Time', fontsize=14)
         plt.ylabel('Index', fontsize=14)
         
-        Saver.save_plots
+        Saver.save_plots("pikamom is stupid")
 
         print(merged_11.head(5))

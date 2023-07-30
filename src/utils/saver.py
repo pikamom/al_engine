@@ -33,7 +33,7 @@ class Saver:
             filename = filename + extension
   
         logger.debug(
-            f'Saving file with file name [{filename}] at location [{SETTINGS["run_meta_data"]["run_folder"]}/plots]...'
+            f'Saving file with file name [{filename}] at location [{SETTINGS["run_meta_data"]["run_folder_path"]}/plots]...'
         )
-        plt.savefig(f'{SETTINGS["run_meta_data"]["run_folder"]}/plots/{filename}', dpi=300)
+        plt.savefig(f'{SETTINGS["run_meta_data"]["run_folder_path"]}/plots/{filename}', dpi=300)
         logger.info("Save successful!")
