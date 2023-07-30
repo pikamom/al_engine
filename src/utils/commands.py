@@ -42,7 +42,7 @@ class Orchestrator:
             logger.info(f"Queueing modules execution for module [{module}]...")
             module()._run()
 
-        time_now=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         logger_message = f"""
 
         ###########################
