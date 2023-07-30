@@ -13,8 +13,8 @@ class LoggerSetup:
         file_handler = logging.FileHandler(log_file)
 
         # formatter
-        formatter = ColoredFormatter(
-            "%(log_color)s[%(levelname)s][%(filename)s][%(asctime)s] %(reset)s%(white)s%(message)s",  # noqa
+        color_formatter = ColoredFormatter(
+            "%(log_color)s[%(levelname)s][%(filename)s][%(asctime)s] %(reset)s%(white)s%(message)s", 
             datefmt="%m-%d %H:%M",
             reset=True,
             log_colors={
@@ -25,8 +25,11 @@ class LoggerSetup:
                 "CRITICAL": "red",
             },
         )
+        file_formatter=logging.Formatter(fmt="[%(levelname)s][%(filename)s][%(asctime)s] %(message)s", 
+            datefmt="%m-%d %H:%M")
 
-        console_output.setFormatter(formatter)
+        console_output.setFormatter(color_formatter)
+        file_handler.setFormatter(file_formatter)
 
         # add in console output handler
         logger.addHandler(console_output)
