@@ -256,42 +256,47 @@ class PreProcess(Module):
         df_merged["LONDON_AL_PRICE"] = df_merged["LONDON_AL_PRICE"].bfill()
         df_merged["LONDON_AL_VOL"] = df_merged["LONDON_AL_VOL"].bfill()
 
-
         logger.info("Starting to conduct feature engineering...")
 
         logger.debug("Generating percentage change in ACC stock price...")
-        df_merged['ACC_CHANGE_WITHIN_A_DAY']=(df_merged['ACC_CLOSE']-df_merged['ACC_OPEN'])/df_merged['ACC_OPEN']*100
-        df_merged['ACC_CHANGE_ACROSS_DAYS']=df_merged['ACC_CLOSE'].pct_change()*100
+        df_merged["ACC_CHANGE_WITHIN_A_DAY"] = (
+            (df_merged["ACC_CLOSE"] - df_merged["ACC_OPEN"])
+            / df_merged["ACC_OPEN"]
+            * 100
+        )
+        df_merged["ACC_CHANGE_ACROSS_DAYS"] = df_merged["ACC_CLOSE"].pct_change() * 100
 
         logger.debug("Generating percentage change in aluminium price...")
-        df_merged['AL_VOLATILITY']= df_merged['AL_PRICE'].pct_change()*100     
+        df_merged["AL_VOLATILITY"] = df_merged["AL_PRICE"].pct_change() * 100
 
-        logger.debug("Calculate RSI for the 'AL_PRICE' column and add it as a new column named 'RSI' to the DataFrame")
-        df_merged['RSI'] = self._calculate_rsi(df_merged['AL_PRICE'])
+        logger.debug(
+            "Calculate RSI for the 'AL_PRICE' column and add it as a new column named 'RSI' to the DataFrame"
+        )
+        df_merged["RSI"] = self._calculate_rsi(df_merged["AL_PRICE"])
 
         logger.info("Plotting missing values indication plot again...")
-        plt.plot(df_merged['RSI'])
+        plt.plot(df_merged["RSI"])
         Saver.save_plots("missing_value_indication_after_acc_update")
         plt.clf()
 
-        Saver.save_csv(df_merged,"processed_data", "processed")
+        Saver.save_csv(df_merged, "processed_data", "processed")
 
     def _calculate_rsi(self, prices, period=14):
-            # Calculate daily price changes
-            delta = prices.diff()
+        logger.debug("Calculate daily price changes")
+        delta = prices.diff()
 
-            # Separate gains and losses
-            gains = delta.where(delta > 0, 0)
-            losses = -delta.where(delta < 0, 0)
+        logger.debug("Separate gains and losses")
+        gains = delta.where(delta > 0, 0)
+        losses = -delta.where(delta < 0, 0)
 
-            # Calculate average gains and losses over the specified period
-            avg_gain = gains.rolling(window=period).mean()
-            avg_loss = losses.rolling(window=period).mean()
+        logger.debug("Calculate average gains and losses over the specified period")
+        avg_gain = gains.rolling(window=period).mean()
+        avg_loss = losses.rolling(window=period).mean()
 
-            # Calculate the relative strength (RS)
-            rs = avg_gain / avg_loss
+        logger.debug("Calculate the relative strength (RS)")
+        rs = avg_gain / avg_loss
 
-            # Calculate the RSI
-            rsi = 100 - (100 / (1 + rs))
+        logger.debug("Calculate the RSI")
+        rsi = 100 - (100 / (1 + rs))
 
-            return rsi
+        return rsi

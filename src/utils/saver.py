@@ -13,7 +13,7 @@ class Saver:
         pass
 
     @staticmethod
-    def save_csv(df_to_save: pd.DataFrame, filename: str, type: str="raw"):
+    def save_csv(df_to_save: pd.DataFrame, filename: str, type: str = "raw"):
         if filename[-4:] != ".csv":
             logger.debug(
                 "The filename does not contain .csv as file extension, adding .csv..."
