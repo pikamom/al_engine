@@ -5,10 +5,11 @@
 *__pycache__*
 *.pyc
 
+*.DS_Store
 .DS_Store
-.csv
-.xlsx
-.ipynb
+*.csv
+*.xlsx
+*.ipynb
 
 # logging folder
 logs/
