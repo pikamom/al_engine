@@ -15,9 +15,10 @@ def Boostrap() -> None:
     # run meta data
     run_id, time_now, run_folder_path, log_file = create_run_meta_data()
 
-    # make a run folder + logs folder within the run folder
+    # make folders
     os.makedirs(run_folder_path)
     os.makedirs(f"{run_folder_path}/logs")
+    os.makedirs(f"{run_folder_path}/plots")
 
     # set up logger
     LoggerSetup(log_file=log_file)
@@ -29,7 +30,6 @@ def Boostrap() -> None:
     run id: {run_id}
     run start time: {time_now}
     run folder created at: {run_folder_path}
-    log file stored in: {log_file}
     ###########################
     """
 

@@ -167,6 +167,7 @@ class PreProcess(Module):
         plt.title('INDUSTRIAL_INDEX Raw Data with Missing Values')
         plt.xlabel('Time', fontsize=14)
         plt.ylabel('Index', fontsize=14)
-        plt.show()
+        
+        Saver.save_plots
 
         print(merged_11.head(5))
