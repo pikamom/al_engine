@@ -176,6 +176,7 @@ class PreProcess(Module):
         logger.info("Plotting missing values indication plot...")
         msno.matrix(df_merged)
         Saver.save_plots("missing_value_indication")
+        plt.clf()
 
         logger.info("Filling in industrial index...")
         df_merged["INDUSTRIAL_INDEX"] = df_merged["INDUSTRIAL_INDEX"].bfill()
@@ -187,6 +188,7 @@ class PreProcess(Module):
         plt.xlabel("Time", fontsize=14)
         plt.ylabel("Index", fontsize=14)
         Saver.save_plots("industrial_index")
+        plt.clf()
 
         logger.info(f"Starting Pre-processing of the industrial index")
         start_date = pd.to_datetime("2022-03-01")
@@ -219,17 +221,20 @@ class PreProcess(Module):
         logger.info("Plotting missing values indication plot again...")
         msno.matrix(df_merged)
         Saver.save_plots("missing_value_indication_after_index_ccfi_scfi_update")
+        plt.clf()
 
         logger.info("Plotting Aluminium Corporation of China Stock prices...")
         plt.plot(df_merged["ACC_CLOSE"], label="ACC_CLOSE")
         plt.plot(df_merged["ACC_OPEN"], label="ACC_OPEN")
         plt.legend()
         Saver.save_plots("acc_stock_price")
+        plt.clf()
 
         logger.info("Plotting Aluminium Corporation of China Stock prices...")
         df_merged = df_merged.sort_values("DATE")
         plt.plot(df_merged["DATE"], df_merged["ACC_VOLUME"], label="ACC_VOLUME")
         Saver.save_plots("acc_stock_vol")
+        plt.clf()
 
         logger.debug(
             "Impute the missing values using Rolling Window Method(Linear Interpolation"
@@ -241,6 +246,7 @@ class PreProcess(Module):
         logger.info("Plotting missing values indication plot again...")
         msno.matrix(df_merged)
         Saver.save_plots("missing_value_indication_after_acc_update")
+        plt.clf()
 
         logger.debug("Backfilling all the other columns...")
         df_merged["OIL_PRICE"] = df_merged["OIL_PRICE"].bfill()
@@ -250,4 +256,42 @@ class PreProcess(Module):
         df_merged["LONDON_AL_PRICE"] = df_merged["LONDON_AL_PRICE"].bfill()
         df_merged["LONDON_AL_VOL"] = df_merged["LONDON_AL_VOL"].bfill()
 
-        print(df_merged.head(5))
+
+        logger.info("Starting to conduct feature engineering...")
+
+        logger.debug("Generating percentage change in ACC stock price...")
+        df_merged['ACC_CHANGE_WITHIN_A_DAY']=(df_merged['ACC_CLOSE']-df_merged['ACC_OPEN'])/df_merged['ACC_OPEN']*100
+        df_merged['ACC_CHANGE_ACROSS_DAYS']=df_merged['ACC_CLOSE'].pct_change()*100
+
+        logger.debug("Generating percentage change in aluminium price...")
+        df_merged['AL_VOLATILITY']= df_merged['AL_PRICE'].pct_change()*100     
+
+        logger.debug("Calculate RSI for the 'AL_PRICE' column and add it as a new column named 'RSI' to the DataFrame")
+        df_merged['RSI'] = self._calculate_rsi(df_merged['AL_PRICE'])
+
+        logger.info("Plotting missing values indication plot again...")
+        plt.plot(df_merged['RSI'])
+        Saver.save_plots("missing_value_indication_after_acc_update")
+        plt.clf()
+
+        Saver.save_csv(df_merged,"processed_data", "processed")
+
+    def _calculate_rsi(self, prices, period=14):
+            # Calculate daily price changes
+            delta = prices.diff()
+
+            # Separate gains and losses
+            gains = delta.where(delta > 0, 0)
+            losses = -delta.where(delta < 0, 0)
+
+            # Calculate average gains and losses over the specified period
+            avg_gain = gains.rolling(window=period).mean()
+            avg_loss = losses.rolling(window=period).mean()
+
+            # Calculate the relative strength (RS)
+            rs = avg_gain / avg_loss
+
+            # Calculate the RSI
+            rsi = 100 - (100 / (1 + rs))
+
+            return rsi
