@@ -26,17 +26,16 @@ class Scaling(Module):
         logger.info("Reading in cleaned dataframe")
         raw_df=pd.read_csv("data/processed/cleaned_data.csv")
 
-        merged_11 = raw_df
         logger.info("Starting min-max scaling process")
         scaler = MinMaxScaler()
 
         logger.debug("Fit and transform the explainary variables dataframe with the scaler")
-        merged_copy=merged_11.copy()
-        merged_copy=merged_copy.set_index('DATE')
-        merged_scaled = pd.DataFrame(scaler.fit_transform(merged_copy), columns=merged_copy.columns)
-        merged_scaled['DATE']=merged_11['DATE']
+        copy_raw_df=raw_df.copy()
+        copy_raw_df=copy_raw_df.set_index('DATE')
+        scaled_df = pd.DataFrame(scaler.fit_transform(copy_raw_df), columns=copy_raw_df.columns)
+        scaled_df['DATE']=raw_df['DATE']
 
         logger.debug("Dropping rows with missing values as a result of RSI calculation")
-        merged_scaled=merged_scaled.dropna(subset=["RSI"])
+        scaled_df=scaled_df.dropna(subset=["RSI"])
 
-        Saver.save_csv(merged_scaled, "scaled_cleaned_data", "processed")
+        Saver.save_csv(scaled_df, "scaled_cleaned_data", "processed")
