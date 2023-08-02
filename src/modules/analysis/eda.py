@@ -8,7 +8,7 @@ import missingno as msno
 import pandas as pd
 import requests
 from matplotlib.pyplot import figure
-
+import plotly.express as px
 from sklearn.preprocessing import MinMaxScaler
 
 from src.modules.base import Module
@@ -24,15 +24,10 @@ class EDA(Module):
 
     def run(self):
         logger.info("Reading in cleaned dataframe")
-        raw_df=pd.read_csv("data/processed/cleaned_data.csv")
+        clean_df=pd.read_csv("data/processed/cleaned_data.csv")
+        merged_scaled=pd.read_csv("data/processed/scaled_cleaned_data.csv")
 
-        logger.info("Starting min-max scaling process")
-        scaler = MinMaxScaler()
-
-        logger.debug("Fit and transform the explainary variables dataframe with the scaler")
-        copy_raw_df=raw_df.copy()
-        copy_raw_df=copy_raw_df.set_index('DATE')
-        scaled_df = pd.DataFrame(scaler.fit_transform(copy_raw_df), columns=copy_raw_df.columns)
-        scaled_df['DATE']=raw_df['DATE']
-
-        Saver.save_csv(scaled_df, "scaled_cleaned_data", "processed")
+        logger.info("Giving a line plot on all features")
+        fig = px.line(merged_scaled.drop('DATE',axis=1), facet_col="variable", facet_col_wrap=3,
+                    width=1000, height=1200, facet_row_spacing=0.02)  
+        Saver.save_plots("line_plot")
