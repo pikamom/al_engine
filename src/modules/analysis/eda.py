@@ -27,7 +27,11 @@ class EDA(Module):
         clean_df=pd.read_csv("data/processed/cleaned_data.csv")
         merged_scaled=pd.read_csv("data/processed/scaled_cleaned_data.csv")
 
+
+        print(merged_scaled)
+
         logger.info("Giving a line plot on all features")
         fig = px.line(merged_scaled.drop('DATE',axis=1), facet_col="variable", facet_col_wrap=3,
-                    width=1000, height=1200, facet_row_spacing=0.02)  
+                    width=1000, height=1200, facet_row_spacing=0.02)
+        fig.show()
         Saver.save_plots("line_plot")

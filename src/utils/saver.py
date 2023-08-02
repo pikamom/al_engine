@@ -23,7 +23,7 @@ class Saver:
         logger.debug(
             f"Saving file with file name [{filename}] at location [data/{type}/{filename}]..."
         )
-        df_to_save.to_csv(f"data/{type}/{filename}")
+        df_to_save.to_csv(f"data/{type}/{filename}", index=False)
         logger.info("Save successful!")
 
     @staticmethod

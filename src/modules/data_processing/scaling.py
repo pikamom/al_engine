@@ -26,6 +26,8 @@ class Scaling(Module):
         logger.info("Reading in cleaned dataframe")
         clean_df=pd.read_csv("data/processed/cleaned_data.csv")
 
+        print(clean_df)
+
         logger.info("Starting min-max scaling process")
         scaler = MinMaxScaler()
 
@@ -35,7 +37,6 @@ class Scaling(Module):
         scaled_df = pd.DataFrame(scaler.fit_transform(copy_clean_df), columns=copy_clean_df.columns)
         scaled_df['DATE']=clean_df['DATE']
 
-        logger.debug("Dropping rows with missing values as a result of RSI calculation")
-        scaled_df=scaled_df.dropna(subset=["RSI"])
+        print(scaled_df)
 
         Saver.save_csv(scaled_df, "scaled_cleaned_data", "processed")
