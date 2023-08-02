@@ -21,4 +21,4 @@ class Scaling(Module):
         super().__init__(module_name)
 
     def run(self):
-        
+        raw_df=pd.read_csv("data/processed/")

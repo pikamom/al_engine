@@ -31,8 +31,9 @@ class CleanEngineer(Module):
         logger.info("Reading in additional data...")
 
         logger.debug("Reading in oil prices...")
-        oil = pd.read_csv("data/raw/crude oil price.csv")
-        oil["DATE"] = pd.to_datetime(oil["date"], format="%Y/%m/%d")
+        oil = pd.read_csv("data/raw/crude oil price.csv", header=0)
+        print(oil.head(5))
+        oil["DATE"] = pd.to_datetime(oil["date"], format="%Y-%M-%d")
         oil = oil.drop(["date"], axis=1)
         oil.sort_values(by=["DATE"], inplace=True, ascending=True)
         oil.rename(columns={" value": "OIL_PRICE"}, inplace=True)
@@ -47,14 +48,14 @@ class CleanEngineer(Module):
         logger.debug("Reading in CCFI...")
         ccfi = pd.read_csv("data/raw/ccfi.csv")
 
-        ccfi["DATE"] = pd.to_datetime(ccfi["date"], format="%Y/%m/%d")
+        ccfi["DATE"] = pd.to_datetime(ccfi["date"], format="%Y-%m-%d")
         ccfi = ccfi.drop(["date", "Unnamed: 0"], axis=1)
         ccfi.sort_values(by=["DATE"], inplace=True, ascending=True)
         ccfi.rename(columns={"ccfi_index": "CCFI_INDEX"}, inplace=True)
 
         logger.debug("Reading in SCFI prices...")
         scfi = pd.read_csv("data/raw/scfi.csv")
-        scfi["DATE"] = pd.to_datetime(scfi["date"], format="%Y/%m/%d")
+        scfi["DATE"] = pd.to_datetime(scfi["date"], format="%Y-%m-%d")
         scfi = scfi.drop(["date", "Unnamed: 0"], axis=1)
         scfi.sort_values(by=["DATE"], inplace=True, ascending=True)
         scfi.rename(columns={"scfi_index": "SCFI_INDEX"}, inplace=True)
@@ -68,36 +69,36 @@ class CleanEngineer(Module):
         )
 
         usd_to_yuan_exchange["DATE"] = pd.to_datetime(
-            usd_to_yuan_exchange["date"], format="%Y/%m/%d"
+            usd_to_yuan_exchange["date"], format="%Y-%m-%d"
         )
         usd_to_yuan_exchange = usd_to_yuan_exchange.drop(["date"], axis=1)
         usd_to_yuan_exchange.sort_values(by=["DATE"], inplace=True, ascending=True)
         usd_to_yuan_exchange.rename(columns={" value": "US_DOLLAR"}, inplace=True)
         aud_to_yuan_exchange["DATE"] = pd.to_datetime(
-            aud_to_yuan_exchange["date"], format="%Y/%m/%d"
+            aud_to_yuan_exchange["date"], format="%Y-%m-%d"
         )
         aud_to_yuan_exchange = aud_to_yuan_exchange.drop(["date"], axis=1)
         aud_to_yuan_exchange.sort_values(by=["DATE"], inplace=True, ascending=True)
         aud_to_yuan_exchange.rename(columns={" value": "AUS_DOLLAR"}, inplace=True)
 
         logger.debug("Reading in london AL prices...")
-        london = pd.read_csv("data/raw/London Aluminium Historical Data.csv")
-        london["DATE"] = pd.to_datetime(london["Date"], format="%d/%m/%Y")
-        london = london.drop(["Date", "Open", "High", "Low", "Change %"], axis=1)
-        london.sort_values(by=["DATE"], inplace=True, ascending=True)
-        london.rename(
+        london_al = pd.read_csv("data/raw/London Aluminium Historical Data.csv")
+        london_al["DATE"] = pd.to_datetime(london_al["Date"], format="%d/%m/%Y")
+        london_al = london_al.drop(["Date", "Open", "High", "Low", "Change %"], axis=1)
+        london_al.sort_values(by=["DATE"], inplace=True, ascending=True)
+        london_al.rename(
             columns={"Price": "LONDON_AL_PRICE", "Vol.": "LONDON_AL_VOL"}, inplace=True
         )
-        london["LONDON_AL_PRICE"] = (
-            london["LONDON_AL_PRICE"].str.replace(",", "", regex=True).astype(float)
+        london_al["LONDON_AL_PRICE"] = (
+            london_al["LONDON_AL_PRICE"].str.replace(",", "", regex=True).astype(float)
         )
-        london["LONDON_AL_VOL"] = (
-            london["LONDON_AL_VOL"].str.replace("K", "", regex=True).astype(float)
+        london_al["LONDON_AL_VOL"] = (
+            london_al["LONDON_AL_VOL"].str.replace("K", "", regex=True).astype(float)
         )
 
         logger.debug("Reading in industry data...")
         industry = pd.read_csv("data/raw/industrial-production-historical-chart.csv")
-        industry["DATE"] = pd.to_datetime(industry["date"], format="%Y/%m/%d")
+        industry["DATE"] = pd.to_datetime(industry["date"], format="%Y-%m-%d")
         industry = industry.drop(["date"], axis=1)
         industry.sort_values(by=["DATE"], inplace=True, ascending=True)
         industry.rename(columns={" value": "INDUSTRIAL_INDEX"}, inplace=True)
@@ -124,7 +125,7 @@ class CleanEngineer(Module):
             usd_to_yuan_exchange,
             aud_to_yuan_exchange,
             cu_price,
-            london,
+            london_al,
             industry,
             acc,
         ]:
