@@ -241,7 +241,7 @@ class CleanEngineer(Module):
 
         logger.info("Plotting missing values indication plot again...")
         plt.plot(df_merged["RSI"])
-        Saver.save_plots("missing_value_indication_after_acc_update")
+        Saver.save_plots("rsi_plot")
         plt.clf()
 
         Saver.save_csv(df_merged, "cleaned_data", "processed")
