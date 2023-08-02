@@ -32,8 +32,7 @@ class CleanEngineer(Module):
 
         logger.debug("Reading in oil prices...")
         oil = pd.read_csv("data/raw/crude oil price.csv", header=0)
-        print(oil.head(5))
-        oil["DATE"] = pd.to_datetime(oil["date"], format="%Y-%M-%d")
+        oil["DATE"] = pd.to_datetime(oil["date"], format="%Y-%m-%d")
         oil = oil.drop(["date"], axis=1)
         oil.sort_values(by=["DATE"], inplace=True, ascending=True)
         oil.rename(columns={" value": "OIL_PRICE"}, inplace=True)
