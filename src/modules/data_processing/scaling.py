@@ -36,9 +36,7 @@ class Scaling(Module):
         merged_scaled = pd.DataFrame(scaler.fit_transform(merged_copy), columns=merged_copy.columns)
         merged_scaled['DATE']=merged_11['DATE']
 
-        print(merged_scaled.head(20))
-
         logger.debug("Dropping rows with missing values as a result of RSI calculation")
         merged_scaled=merged_scaled.dropna(subset=["RSI"])
 
-        print(merged_scaled.head(20))
+        Saver.save_csv(merged_scaled, "scaled_cleaned_data", "processed")
