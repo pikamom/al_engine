@@ -244,7 +244,7 @@ class CleanEngineer(Module):
         Saver.save_plots("missing_value_indication_after_acc_update")
         plt.clf()
 
-        Saver.save_csv(df_merged, "processed_data", "processed")
+        Saver.save_csv(df_merged, "cleaned_data", "processed")
 
     def _extract_metal_price(self, metal: str) -> Dict:
         all_metal_futures = pd.read_csv("data/raw/futures prices.csv")
