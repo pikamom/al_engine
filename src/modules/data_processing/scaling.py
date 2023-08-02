@@ -26,8 +26,6 @@ class Scaling(Module):
         logger.info("Reading in cleaned dataframe")
         clean_df=pd.read_csv("data/processed/cleaned_data.csv")
 
-        print(clean_df)
-
         logger.info("Starting min-max scaling process")
         scaler = MinMaxScaler()
 
@@ -36,7 +34,5 @@ class Scaling(Module):
         copy_clean_df=copy_clean_df.set_index('DATE')
         scaled_df = pd.DataFrame(scaler.fit_transform(copy_clean_df), columns=copy_clean_df.columns)
         scaled_df['DATE']=clean_df['DATE']
-
-        print(scaled_df)
 
         Saver.save_csv(scaled_df, "scaled_cleaned_data", "processed")
