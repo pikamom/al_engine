@@ -35,7 +35,4 @@ class EDA(Module):
         scaled_df = pd.DataFrame(scaler.fit_transform(copy_raw_df), columns=copy_raw_df.columns)
         scaled_df['DATE']=raw_df['DATE']
 
-        logger.debug("Dropping rows with missing values as a result of RSI calculation")
-        scaled_df=scaled_df.dropna(subset=["RSI"])
-
         Saver.save_csv(scaled_df, "scaled_cleaned_data", "processed")

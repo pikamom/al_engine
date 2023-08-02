@@ -238,6 +238,9 @@ class CleanEngineer(Module):
         )
         df_merged["RSI"] = self._calculate_rsi(df_merged["AL_PRICE"])
 
+        logger.debug("Dropping rows with missing values as a result of RSI calculation")
+        df_merged=df_merged.dropna(subset=["RSI"])
+
         logger.info("Plotting missing values indication plot again...")
         plt.plot(df_merged["RSI"])
         Saver.save_plots("rsi_plot")
