@@ -40,12 +40,14 @@ class StatsTest(Module):
 
 
         variable_names = corr_matrix["AL_PRICE"].index
+        al_correlation_values=corr_matrix["AL_PRICE"]
         logger.info(f"Variables present in [corr_matirx] are [{variable_names}]")
 
         logger.debug("Perform the t-test for each correlation coefficient")
-        for i, correlation in enumerate(corr_matrix["AL_PRICE"]):
+        list_p_values=[]
+        list_decisions=[]
+        for i, correlation in enumerate(al_correlation_values):
             logger.debug("Convert the correlation to a z-score using Fisher's r-to-z transformation")
-            logger.info("This is required to make the correlation values approximately normally distributed")
             z_score = np.arctanh(correlation)
             
             logger.debug("Calculate the standard error for the z-score")
@@ -56,12 +58,18 @@ class StatsTest(Module):
             
             logger.debug("Calculate the p-value")
             p_value = 2 * (1 - stats.t.cdf(np.abs(t_stat), degrees_of_freedom))
+            list_p_values.append(p_value)
             
             logger.debug("Check if the correlation is significant")
             if p_value < alpha:
-                print(f"Correlation between 'AL_PRICE' and '{variable_names[i]}' is {round(correlation,2)} and is significant.")
+                logger.info(f"Correlation between 'AL_PRICE' and '{variable_names[i]}' is {round(correlation,2)} and is significant.")
+                list_decisions.append("significant")
             else:
-                print(f"Correlation between 'AL_PRICE' and '{variable_names[i]}' is {round(correlation,2)} but is not.")
+                logger.info(f"Correlation between 'AL_PRICE' and '{variable_names[i]}' is {round(correlation,2)} but is not significant")
+                list_decisions.append("insignificant")
 
+        logger.info(f"Making a t-test dataframe for results")
+        t_test_results=pd.DataFrame({"Variable_Name": variable_names, "Correlation":al_correlation_values,"P_Value":list_p_values,f"Test_Result_Alpha_{alpha}": list_decisions})
+        Saver.save_csv(t_test_results, "t_test", "results")
 
         
