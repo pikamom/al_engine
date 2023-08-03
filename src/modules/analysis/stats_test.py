@@ -41,7 +41,7 @@ class StatsTest(Module):
 
         variable_names = corr_matrix["AL_PRICE"].index
         al_correlation_values=corr_matrix["AL_PRICE"]
-        logger.info(f"Variables present in [corr_matirx] are [{variable_names}]")
+        logger.info(f"Variables present in [corr_matirx] are {list(variable_names)}")
 
         logger.debug("Perform the t-test for each correlation coefficient")
         list_p_values=[]
