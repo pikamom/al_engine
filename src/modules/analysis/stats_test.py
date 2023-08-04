@@ -114,6 +114,6 @@ class StatsTest(Module):
             logger.debug(f"Best lags / p-value for variable [{var}] is {(best_lag, best_p_value)}")
             best_lags[var] = (best_lag, best_p_value)
         
-        granger_causality_results = pd.DataFrame(best_lags).T
-        granger_causality_results.columns = ["best_lag", "best_p_value"]
+        granger_causality_results = pd.DataFrame(best_lags).T.reset_index()
+        granger_causality_results.columns = ["variable_name","best_lag", "best_p_value"]
         Saver.save_csv(granger_causality_results, "granger_causality_test", "results")

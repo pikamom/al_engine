@@ -33,7 +33,7 @@ class EDA(Module):
         logger.warn("Need to fix the plot saving")
         fig = px.line(merged_scaled, facet_col="variable", facet_col_wrap=3,
                     width=1000, height=1200, facet_row_spacing=0.02)
-        plotly.offline.plot(fig, filename=f'{SETTINGS.run_meta_data.run_folder_path}/plots/line_plot.html')
+        plotly.offline.plot(fig, filename=f'{SETTINGS["run_meta_data"]["run_folder_path"]}/plots/line_plot.html')
         plt.clf()
 
         logger.info("Giving a correlation plot on all features")
