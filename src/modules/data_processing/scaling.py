@@ -1,14 +1,7 @@
 import logging
 import os
-from datetime import datetime, timedelta
-from typing import Dict
 
-import matplotlib.pyplot as plt
-import missingno as msno
 import pandas as pd
-import requests
-from matplotlib.pyplot import figure
-
 from sklearn.preprocessing import MinMaxScaler
 
 from src.modules.base import Module
@@ -24,15 +17,15 @@ class Scaling(Module):
 
     def run(self):
         logger.info("Reading in cleaned dataframe")
-        clean_df=pd.read_csv("data/processed/cleaned_data.csv")
+        clean_df = pd.read_csv("data/processed/cleaned_data.csv")
 
         logger.info("Starting min-max scaling process")
         scaler = MinMaxScaler()
 
         logger.debug("Fit and transform the explainary variables dataframe with the scaler")
-        copy_clean_df=clean_df.copy()
-        copy_clean_df=copy_clean_df.set_index('DATE')
+        copy_clean_df = clean_df.copy()
+        copy_clean_df = copy_clean_df.set_index("DATE")
         scaled_df = pd.DataFrame(scaler.fit_transform(copy_clean_df), columns=copy_clean_df.columns)
-        scaled_df['DATE']=clean_df['DATE']
+        scaled_df["DATE"] = clean_df["DATE"]
 
         Saver.save_csv(scaled_df, "scaled_cleaned_data", "processed")

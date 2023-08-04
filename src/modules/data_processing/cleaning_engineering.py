@@ -1,12 +1,10 @@
 import logging
 import os
-from datetime import datetime, timedelta
 from typing import Dict
 
 import matplotlib.pyplot as plt
 import missingno as msno
 import pandas as pd
-import requests
 from matplotlib.pyplot import figure
 
 from src.modules.base import Module
@@ -128,7 +126,7 @@ class CleanEngineer(Module):
             industry,
             acc,
         ]:
-            logger.info(f"Merging Additional tables into [df_merged]...")
+            logger.info("Merging Additional tables into [df_merged]...")
             df_merged = df_merged.merge(table, on="DATE", how="left")
 
         logger.info("Renaming columns...")
@@ -154,7 +152,7 @@ class CleanEngineer(Module):
         Saver.save_plots("industrial_index")
         plt.clf()
 
-        logger.info(f"Starting Pre-processing of the industrial index")
+        logger.info("Starting Pre-processing of the industrial index")
         start_date = pd.to_datetime("2022-03-01")
         end_date = pd.to_datetime("2023-03-01")
         selected_rows = df_merged[
@@ -167,7 +165,7 @@ class CleanEngineer(Module):
         df_merged["INDUSTRIAL_INDEX"].fillna(average_Industrial_value, inplace=True)
 
         logger.info(
-            "Fill the null values in CCFI_INDEX with the average of the available two consecutive weekly data"
+            "Fill the null values in CCFI_INDEX with the average of the available two consecutive weekly data"  # noqa
         )
         df_merged["CCFI_INDEX_NEW"] = (
             df_merged["CCFI_INDEX"].bfill() + df_merged["CCFI_INDEX"].ffill()
@@ -175,7 +173,7 @@ class CleanEngineer(Module):
         df_merged.drop("CCFI_INDEX", axis=1, inplace=True)
 
         logger.info(
-            "fill the null values in SCFI_INDEX with the average of the available two consecutive weekly data"
+            "fill the null values in SCFI_INDEX with the average of the available two consecutive weekly data"  # noqa
         )
         df_merged["SCFI_INDEX_NEW"] = (
             df_merged["SCFI_INDEX"].bfill() + df_merged["SCFI_INDEX"].ffill()
@@ -200,9 +198,7 @@ class CleanEngineer(Module):
         Saver.save_plots("acc_stock_vol")
         plt.clf()
 
-        logger.debug(
-            "Impute the missing values using Rolling Window Method(Linear Interpolation"
-        )
+        logger.debug("Impute the missing values using Rolling Window Method(Linear Interpolation")
         df_merged["ACC_OPEN"] = df_merged["ACC_OPEN"].interpolate(method="linear")
         df_merged["ACC_CLOSE"] = df_merged["ACC_CLOSE"].interpolate(method="linear")
         df_merged["ACC_VOLUME"] = df_merged["ACC_VOLUME"].interpolate(method="linear")
@@ -224,9 +220,7 @@ class CleanEngineer(Module):
 
         logger.debug("Generating percentage change in ACC stock price...")
         df_merged["ACC_CHANGE_WITHIN_A_DAY"] = (
-            (df_merged["ACC_CLOSE"] - df_merged["ACC_OPEN"])
-            / df_merged["ACC_OPEN"]
-            * 100
+            (df_merged["ACC_CLOSE"] - df_merged["ACC_OPEN"]) / df_merged["ACC_OPEN"] * 100
         )
         df_merged["ACC_CHANGE_ACROSS_DAYS"] = df_merged["ACC_CLOSE"].pct_change() * 100
 
@@ -234,12 +228,12 @@ class CleanEngineer(Module):
         df_merged["AL_VOLATILITY"] = df_merged["AL_PRICE"].pct_change() * 100
 
         logger.debug(
-            "Calculate RSI for the 'AL_PRICE' column and add it as a new column named 'RSI' to the DataFrame"
+            "Calculate RSI for the 'AL_PRICE' column and add it as a new column named 'RSI' to the DataFrame"  # noqa
         )
         df_merged["RSI"] = self._calculate_rsi(df_merged["AL_PRICE"])
 
         logger.debug("Dropping rows with missing values as a result of RSI calculation")
-        df_merged=df_merged.dropna(subset=["RSI"])
+        df_merged = df_merged.dropna(subset=["RSI"])
 
         logger.info("Plotting missing values indication plot again...")
         plt.plot(df_merged["RSI"])
@@ -250,12 +244,8 @@ class CleanEngineer(Module):
 
     def _extract_metal_price(self, metal: str) -> Dict:
         all_metal_futures = pd.read_csv("data/raw/futures prices.csv")
-        all_metal_futures["DATE"] = pd.to_datetime(
-            all_metal_futures["date"], format="%d/%m/%Y"
-        )
-        all_metal_futures = all_metal_futures.drop(
-            ["TRADINGDAY", "id", "Unnamed: 0"], axis=1
-        )
+        all_metal_futures["DATE"] = pd.to_datetime(all_metal_futures["date"], format="%d/%m/%Y")
+        all_metal_futures = all_metal_futures.drop(["TRADINGDAY", "id", "Unnamed: 0"], axis=1)
         metal_prices = all_metal_futures[
             all_metal_futures.INSTRUMENTID.str.startswith(metal)
         ].reset_index()
@@ -265,9 +255,7 @@ class CleanEngineer(Module):
             metal_prices["exec_year"] + "-" + metal_prices["exec_month"] + "-" + "15"
         )
         metal_prices["exec_date"] = pd.to_datetime(metal_prices["exec_date"])
-        metal_prices["exec_begin_date"] = metal_prices["exec_date"] - pd.DateOffset(
-            months=1
-        )
+        metal_prices["exec_begin_date"] = metal_prices["exec_date"] - pd.DateOffset(months=1)
         metal_prices = metal_prices[
             (metal_prices["DATE"] > metal_prices["exec_begin_date"])
             & (metal_prices["DATE"] <= metal_prices["exec_date"])
@@ -277,13 +265,13 @@ class CleanEngineer(Module):
             .sort_values("DATE")
             .drop(["exec_year", "exec_month", "exec_date", "exec_begin_date"], axis=1)
         )
-        metal_prices = metal_prices[
-            metal_prices.SETTLEMENTPRICE.isnull() == False
-        ].reset_index(drop=True)
+        metal_prices = metal_prices[metal_prices.SETTLEMENTPRICE.isnull() == False].reset_index(
+            drop=True
+        )
         metal_prices = metal_prices[["DATE", "SETTLEMENTPRICE"]]
 
         return metal_prices
-    
+
     def _calculate_rsi(self, prices, period=14):
         logger.debug("Calculate daily price changes")
         delta = prices.diff()

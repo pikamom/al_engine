@@ -5,8 +5,6 @@ import uuid
 from datetime import datetime
 from typing import Union
 
-import yaml
-
 from src.utils.logger import LoggerSetup
 from src.utils.settings import SETTINGS
 
