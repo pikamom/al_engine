@@ -15,6 +15,7 @@ from sklearn.preprocessing import MinMaxScaler
 from statsmodels.tsa.stattools import adfuller
 from src.modules.base import Module
 from src.utils.saver import Saver
+from statsmodels.tsa.stattools import grangercausalitytests
 
 logger = logging.getLogger("al_engine")
 
@@ -25,6 +26,18 @@ class StatsTest(Module):
         super().__init__(module_name)
 
     def run(self):
+
+        logger.info("Conducting t-test")
+        self.t_test()
+        logger.info('T-test completed successfully')
+
+        logger.info("Conducting Granger Causality Test")
+        self._granger_causality_test()
+        logger.info('Granger Causality Test completed successfully')
+
+
+
+    def _t_test(self):
         logger.info("Reading in cleaned dataframe")
         clean_df=pd.read_csv("data/processed/cleaned_data.csv")
         merged_scaled=pd.read_csv("data/processed/scaled_cleaned_data.csv").set_index("DATE") # change name later on
@@ -72,4 +85,36 @@ class StatsTest(Module):
         t_test_results=pd.DataFrame({"Variable_Name": variable_names, "Correlation":al_correlation_values,"P_Value":list_p_values,f"Test_Result_Alpha_{alpha}": list_decisions})
         Saver.save_csv(t_test_results, "t_test", "results")
 
+    def _granger_causality_test():
+        clean_df=pd.read_csv("data/processed/cleaned_data.csv")
+        merged_scaled=pd.read_csv("data/processed/scaled_cleaned_data.csv").set_index("DATE") # change name later on
+
+        logger.info("Determine the maximum number of lags to consider")
+        max_lag = min(len(merged_scaled['AL_PRICE']) - 1, 20)
+
+        best_lags = {}
+        for var in merged_scaled.columns:
+            if var == 'AL_PRICE':
+                continue
+            logger.debug(f"Conducting test for variable {var}")
+
+            best_lag = None
+            best_p_value = float('inf')
+            for lag in range(1, max_lag + 1):
+                # Run the Granger causality test for the current pair and lag
+                results = grangercausalitytests(merged_scaled[['AL_PRICE', var]], maxlag=lag)
+                p_value = results[lag][0]['ssr_ftest'][1]
+
+                logger.debug(f"P-value is [{p_value}] and the best p value is [{best_p_value}]")
+                if p_value > best_p_value:
+                    break
+
+                logger.info("Update the best lag and p-value")
+                best_lag = lag
+                best_p_value = p_value
+
+            logger.debug(f"Best lags / p-value for variable [{var}] is {(best_lag, best_p_value)}")
+            best_lags[var] = (best_lag, best_p_value)
         
+        a1 = pd.DataFrame(best_lags)
+        print(a1.head())
