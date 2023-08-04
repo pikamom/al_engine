@@ -4,7 +4,7 @@ import os
 import numpy as np
 import pandas as pd
 from scipy import stats
-from statsmodels.tsa.stattools import grangercausalitytests
+from statsmodels.tsa.stattools import adfuller, grangercausalitytests
 
 from src.modules.base import Module
 from src.utils.saver import Saver
@@ -25,6 +25,10 @@ class StatsTest(Module):
         logger.info("Conducting Granger Causality Test")
         self._granger_causality_test()
         logger.info("Granger Causality Test completed successfully")
+
+        logger.info("Conducting ADF Test for stationarity")
+        self._adf_test()
+        logger.info("ADF Test completed successfully")
 
     def _t_test(self):
         logger.info("Reading in cleaned dataframe")
@@ -91,7 +95,7 @@ class StatsTest(Module):
     def _granger_causality_test(self):
         scaled_cleaned_data = pd.read_csv("data/processed/scaled_cleaned_data.csv").set_index(
             "DATE"
-        )  # change name later on
+        )
 
         logger.info("Determine the maximum number of lags to consider")
         max_lag = min(len(scaled_cleaned_data["AL_PRICE"]) - 1, 20)
@@ -129,3 +133,24 @@ class StatsTest(Module):
             "best_p_value",
         ]
         Saver.save_csv(granger_causality_results, "granger_causality_test", "results")
+
+    def _adf_test(self):
+        scaled_cleaned_data = pd.read_csv("data/processed/scaled_cleaned_data.csv").set_index(
+            "DATE"
+        )
+
+        p_values_list = []
+        for column in scaled_cleaned_data.columns:
+            logger.debug(f"Conducting ADF test for col [{column}]")
+            result = adfuller(scaled_cleaned_data[column].values)
+
+            p_value = round(result[1], 3)
+            p_values_list.append(p_value)
+
+            logger.info(f"p-value for ADF test on [{column}] is [{p_value}]")
+
+        logger.info("Creating ADF test results dataframe")
+        adf_test_results = pd.DataFrame(
+            {"col_name": scaled_cleaned_data.columns, "adf_p_value": p_values_list}
+        )
+        Saver.save_csv(adf_test_results, "adf_test", "results")
