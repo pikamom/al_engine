@@ -9,7 +9,6 @@ import seaborn as sns
 
 from src.modules.base import Module
 from src.utils.saver import Saver
-from src.utils.settings import SETTINGS
 
 logger = logging.getLogger("al_engine")
 
@@ -36,7 +35,7 @@ class EDA(Module):
         )
         plotly.offline.plot(
             fig,
-            filename=f'{SETTINGS["run_meta_data"]["run_folder_path"]}/plots/line_plot.html',
+            filename=f'{self.settings["run_meta_data"]["run_folder_path"]}/plots/line_plot.html',
         )
         plt.clf()
 
