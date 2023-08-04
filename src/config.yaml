@@ -3,3 +3,7 @@ orchestration:
 scrape:
   metal_futures:
     number_of_backtrack_days: 5
+model:
+  data:
+    shift: 22
+    training_end_date: '2020-09-10' # exclusive for training, inclusive for testing
