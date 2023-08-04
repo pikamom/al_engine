@@ -93,15 +93,15 @@ class StatsTest(Module):
         Saver.save_csv(t_test_results, "t_test", "results")
 
     def _granger_causality_test(self):
-        scaled_cleaned_data = pd.read_csv("data/processed/scaled_cleaned_data.csv").set_index(
-            "DATE"
-        )
+        differenced_scaled_cleaned_data = pd.read_csv(
+            "data/processed/differenced_scaled_cleaned_data.csv"
+        ).set_index("DATE")
 
         logger.info("Determine the maximum number of lags to consider")
-        max_lag = min(len(scaled_cleaned_data["AL_PRICE"]) - 1, 20)
+        max_lag = min(len(differenced_scaled_cleaned_data["AL_PRICE"]) - 1, 20)
 
         best_lags = {}
-        for var in scaled_cleaned_data.columns:
+        for var in differenced_scaled_cleaned_data.columns:
             if var == "AL_PRICE":
                 continue
             logger.debug(f"Conducting test for variable {var}")
@@ -112,7 +112,9 @@ class StatsTest(Module):
                 logger.debug(
                     f"Running Granger Causality test for al price with variable [{var}] and lag [{lag}]"  # noqa
                 )
-                results = grangercausalitytests(scaled_cleaned_data[["AL_PRICE", var]], maxlag=lag)
+                results = grangercausalitytests(
+                    differenced_scaled_cleaned_data[["AL_PRICE", var]], maxlag=lag
+                )
                 p_value = results[lag][0]["ssr_ftest"][1]
 
                 logger.debug(f"P-value is [{p_value}] and the best p value is [{best_p_value}]")
@@ -132,7 +134,9 @@ class StatsTest(Module):
             "best_lag",
             "best_p_value",
         ]
-        Saver.save_csv(granger_causality_results, "granger_causality_test", "results")
+        Saver.save_csv(
+            granger_causality_results, "granger_causality_test_on_diff_scaled_data", "results"
+        )
 
     def _adf_test(self):
         scaled_cleaned_data = pd.read_csv("data/processed/scaled_cleaned_data.csv").set_index(
