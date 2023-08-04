@@ -7,7 +7,6 @@ from sklearn.preprocessing import MinMaxScaler
 from src.modules.base import Module
 from src.utils.saver import Saver
 
-
 logger = logging.getLogger("al_engine")
 
 
