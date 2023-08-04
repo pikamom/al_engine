@@ -23,10 +23,9 @@ class EDA(Module):
         logger.info("Reading in cleaned dataframe")
         scaled_cleaned_data = pd.read_csv("data/processed/scaled_cleaned_data.csv").set_index(
             "DATE"
-        )  # change name later on
+        )
 
         logger.info("Giving a line plot on all features")
-        logger.warn("Need to fix the plot saving")
         fig = px.line(
             scaled_cleaned_data,
             facet_col="variable",
