@@ -2,7 +2,6 @@ import logging
 import os
 
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
 
 from src.modules.base import Module
 from src.utils.saver import Saver
@@ -16,7 +15,7 @@ class Differencing(Module):
         super().__init__(module_name)
 
     def run(self):
-        logger.info("Reading in cleaned dataframe")
+        logger.info("Reading in cleaned and scaled dataframe")
         scaled_cleaned_data = pd.read_csv("data/processed/cleaned_data.csv")
 
         logger.info("Define columns to differencing on")
