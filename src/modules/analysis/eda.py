@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from typing import Dict
 import seaborn as sns
 import matplotlib.pyplot as plt
+import plotly
 import missingno as msno
 import pandas as pd
 import requests
@@ -13,6 +14,7 @@ from sklearn.preprocessing import MinMaxScaler
 from statsmodels.tsa.stattools import adfuller
 from src.modules.base import Module
 from src.utils.saver import Saver
+from src.utils.settings import SETTINGS
 
 logger = logging.getLogger("al_engine")
 
@@ -31,7 +33,7 @@ class EDA(Module):
         logger.warn("Need to fix the plot saving")
         fig = px.line(merged_scaled, facet_col="variable", facet_col_wrap=3,
                     width=1000, height=1200, facet_row_spacing=0.02)
-        Saver.save_plots("line_plot")
+        plotly.offline.plot(fig, filename=f'{SETTINGS.run_meta_data.run_folder_path}/plots/line_plot.html')
         plt.clf()
 
         logger.info("Giving a correlation plot on all features")
