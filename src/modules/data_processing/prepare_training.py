@@ -20,9 +20,7 @@ class PrepareTraining(Module):
         scaled_cleaned_data = pd.read_csv("data/processed/scaled_cleaned_data.csv")
 
         logger.info("Creating training dataframe for non-shifted al price")
-        training_unshifted, testing_unshifted = self._split_train_test_data(
-            self, scaled_cleaned_data
-        )
+        training_unshifted, testing_unshifted = self._split_train_test_data(scaled_cleaned_data)
 
         logger.debug(
             f'Creating shifted price dataframe with shift = [{self.settings["model"]["data"]["shift"]}]'
@@ -32,13 +30,13 @@ class PrepareTraining(Module):
             self.settings["model"]["data"]["shift"]
         )
         shifted_df = shifted_df.dropna().reset_index(drop=True)
-        training_shifted, testing_shifted = self._split_train_test_data(self, shifted_df)
+        training_shifted, testing_shifted = self._split_train_test_data(shifted_df)
 
         logger.info("Saving all created modelling data files")
         Saver.save_csv(training_unshifted, "training_unshifted", "modelling")
         Saver.save_csv(testing_unshifted, "testing_unshifted", "modelling")
         Saver.save_csv(training_shifted, "training_shifted", "modelling")
-        Saver.save_csv(testing_unshifted, "testing_unshifted", "modelling")
+        Saver.save_csv(testing_shifted, "testing_shifted", "modelling")
 
     def _split_train_test_data(self, data):
         logger.debug(
