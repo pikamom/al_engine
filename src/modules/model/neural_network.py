@@ -24,7 +24,7 @@ class NeuralNetworkModel(Module):
 
     def run(self):
         logger.info("Reading in training datasets from unshifted data")
-        clean_scaled_data = pd.read_csv("data/processed_scaled_clean_data.csv")
+        clean_scaled_data = pd.read_csv("data/processed/scaled_cleaned_data.csv")
 
         logger.debug("Running the LSTM model for difference structure")
         lstm_y_pred_test = []
@@ -73,18 +73,28 @@ class NeuralNetworkModel(Module):
             Saver.save_plots(f"lstm_type_{model_type}_test_prediction_out_of_sample")
             plt.clf()
 
+            logger.info("Store the model predictions")
+            lstm_model_results_df = pd.DataFrame({"prediction_value": lstm_y_pred_test})
+            Saver.save_csv(
+                lstm_model_results_df,
+                f"lstm_type_{model_type}_predictions_results",
+                "modelling",
+            )
+
             logger.info("Give model performance metrics")
             lstm_performance_test = calculate_performance_metrics(
                 y_test, lstm_y_pred_test
             )
 
             logger.info("Convert results to dataframe and save it")
-            test_results = pd.DataFrame.from_dict(
+            test_performance_results = pd.DataFrame.from_dict(
                 lstm_performance_test, orient="index"
             ).reset_index()
-            test_results.columns = ["item", "value"]
+            test_performance_results.columns = ["item", "value"]
             Saver.save_csv(
-                test_results, f"lstm_type_{model_type}_test_results", "modelling"
+                test_performance_results,
+                f"lstm_type_{model_type}_test_results",
+                "modelling",
             )
 
     def _run_lstm_model(self, model_type, X_train, y_train, X_test, y_test):
@@ -142,14 +152,18 @@ class NeuralNetworkModel(Module):
         ]
 
         logger.info("Creating predictors and target variables dataset")
-        X_train = training_df.drop(["AL_PRICE"], axis=1).set_index("DATE")
+        X_train = training_df.drop(["AL_PRICE"], axis=1)
         y_train = training_df["AL_PRICE"]
-        X_test = testing_df.drop(["AL_PRICE"], axis=1).set_index("DATE")
+        X_test = testing_df.drop(["AL_PRICE"], axis=1)
         y_test = testing_df["AL_PRICE"]
 
         logger.info("Converting to tensors, except for y_test")
         X_train = tf.convert_to_tensor(X_train.to_numpy())
         y_train = tf.convert_to_tensor(y_train.to_numpy())
         X_test = tf.convert_to_tensor(X_test.to_numpy())
+
+        logger.info("Expand dimensions")
+        X_train = tf.expand_dims(X_train, 1)
+        X_test = tf.expand_dims(X_test, 1)
 
         return X_train, y_train, X_test, y_test
