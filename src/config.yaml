@@ -7,3 +7,6 @@ model:
   data:
     shift: 22
     training_end_date: '2020-09-10' # exclusive for training, inclusive for testing
+  network_model:
+    cut_off_trading_day: 978
+    prediction_num_days: 22 # need to be the same as model.data.shift
