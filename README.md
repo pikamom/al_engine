@@ -34,3 +34,11 @@ python -m src.run preprocess
 The list of available orchestrators are:
 - `scrape`: scrape the metals futures prices
 - `preprocess`: read in raw data (in csv format) and conduct data pre-processing/cleaning
+- `analysis`: conduct statistical analysis and produce EDA plots
+- `model`: build all models discussed in the thesis, including linear ones and LSTM. make sure `preprocess` is run before running this step.
+
+### Section 4 - Results:
+
+Results are stored automatically within the project folders:
+- data folder consists of all csv outputs from the pipeline run
+- each run will have its own run id where one would be able to locate the log files and all plots generated
