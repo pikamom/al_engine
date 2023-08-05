@@ -13,7 +13,7 @@ from src.utils.saver import Saver
 logger = logging.getLogger("al_engine")
 
 
-class LinearRegModel(Module):
+class LinearModel(Module):
     def __init__(self) -> None:
         module_name = os.path.basename(__file__).replace(".py", "")
         super().__init__(module_name)
