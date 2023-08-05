@@ -10,3 +10,5 @@ model:
   network_model:
     cut_off_trading_day: 978
     prediction_num_days: 22 # need to be the same as model.data.shift
+    epoches: 100
+    batch_size: 32

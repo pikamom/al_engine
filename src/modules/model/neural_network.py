@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+from keras.layers import LSTM, Dense
+from keras.models import Sequential
 from sklearn.linear_model import Lasso, LassoCV, LinearRegression, Ridge, RidgeCV
 from sklearn.model_selection import TimeSeriesSplit
 
@@ -24,11 +26,51 @@ class NeuralNetworkModel(Module):
         logger.info("Reading in training datasets from unshifted data")
         clean_scaled_data = pd.read_csv("data/processed_scaled_clean_data.csv")
 
+        logger.debug("Getting the training and testing data")
         X_train, y_train, X_test, y_test = self._get_data(
             self.settings["model"]["network_model"]["cut_off_trading_day"],
             self.settings["model"]["network_model"]["prediction_num_days"],
             clean_scaled_data,
         )
+
+        logger.debug("Running the LSTM model for difference structure")
+        for model_type in [1, 2, 3]:
+            logger.debug(f"Getting the model architecture part [{model_type}]")
+            model = self._get_lstm_model(model_type)
+
+            logger.debug("Training Model")
+            model.compile(optimizer="adam", loss="mse")
+            model.fit(
+                X_train,
+                y_train,
+                epochs=self.settings["model"]["network_model"]["epoches"],
+                batch_size=self.settings["model"]["network_model"]["batch_size"],
+                verbose=0,
+            )
+
+    def _get_lstm_model(slef, type):
+        if type == 1:
+            model = Sequential()
+            model.add(LSTM(64))
+            model.add(Dense(4))
+            model.add(Dense(1))
+        elif type == 2:
+            model = Sequential()
+            model.add(LSTM(64))
+            model.add(Dense(16))
+            model.add(Dense(4))
+            model.add(Dense(1))
+        elif type == 3:
+            model = Sequential()
+            model.add(LSTM(64))
+            model.add(Dense(32))
+            model.add(Dense(16))
+            model.add(Dense(8))
+            model.add(Dense(4))
+            model.add(Dense(1))
+        else:
+            raise NotImplementedError
+        return model
 
     def _get_data(self, cut_off_trading_day, prediction_num_days, data):
         logger.info("Dropping the date columns")
