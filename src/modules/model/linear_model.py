@@ -4,7 +4,6 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from numpy import arange
 from sklearn.linear_model import Lasso, LassoCV, LinearRegression, Ridge, RidgeCV
 from sklearn.model_selection import TimeSeriesSplit
 
