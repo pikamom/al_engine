@@ -62,5 +62,12 @@ class LinearRegModel(Module):
         plt.plot(np.arange(len(y_test)), y_test, label="actual")
         plt.legend()
         plt.title("Linear Regression Out-of-Sample Forecast")
-        Saver.save_plots("linear_regression_prediction")
+        Saver.save_plots("linear_regression_prediction_out_of_sample")
+        plt.clf()
+
+        plt.plot(np.arange(len(pred_linear_train)), pred_linear_train, label="Prediction")
+        plt.plot(np.arange(len(y_train)), y_train, label="actual")
+        plt.legend()
+        plt.title("Linear Regression In-Sample Prediction")
+        Saver.save_plots("linear_regression_prediction_in_sample")
         plt.clf()
