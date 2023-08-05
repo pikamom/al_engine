@@ -1,9 +1,10 @@
 import logging
 import os
 
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import MinMaxScaler
 
 from src.modules.base import Module
 from src.utils.model_measurement import calculate_performance_metrics
@@ -55,3 +56,11 @@ class LinearRegModel(Module):
             f"Scaled Dataset: Linear Regression: In-Sample Error: [{linear_train_performance}]"
         )
         logger.info(f"Out-of-Sample Error: [{linear_test_performance}]")
+
+        logger.info("Plotting prediction and results")
+        plt.plot(np.arange(len(pred_linear_test)), pred_linear_test, label="Prediction")
+        plt.plot(np.arange(len(y_test)), y_test, label="actual")
+        plt.legend()
+        plt.title("Linear Regression Out-of-Sample Forecast")
+        Saver.save_plots("model/linear_regression")
+        plt.clf()
