@@ -29,6 +29,87 @@ class LinearModel(Module):
         self._lasso_regression()
         logger.debug("Lasso regression model finished successfully")
 
+        logger.debug("Starting Ridge Regression Model Building...")
+        self._ridge_regression()
+        logger.debug("Ridge regression model finished successfully")
+
+    def _ridge_regression(self):
+        logger.info("Get training and testing data")
+        X_train, y_train, X_test, y_test = self._get_data()
+
+        logger.info("Finding the best alpha values via grid search")
+        alphas_ridge = 10 ** np.linspace(-5, 2, 100)
+
+        logger.debug(f"Define the range of alpha values to test is {alphas_ridge}")
+        logger.info("Splitting the data into 5 folds for validation and grid search")
+        tscv_ridge = TimeSeriesSplit(n_splits=5)
+
+        logger.info("Fit the ridge CV")
+        ridge_cv = RidgeCV(alphas=alphas_ridge, cv=tscv_ridge)
+        ridge_cv.fit(X_train, y_train)
+
+        best_alpha_ridge = ridge_cv.alpha_
+        logger.debug(
+            f"The best alpha values for ridge found via cross validation is: [{best_alpha_ridge}]"
+        )
+
+        logger.info("Re-fit the model with the best alpha value")
+        ridge = Ridge(alpha=best_alpha_ridge)
+        ridge.fit(X_train, y_train)
+
+        pred_ridge = ridge.predict(X_test)
+        pred_ridge_train = ridge.predict(X_train)
+
+        logger.info("Calculate performance metrics and Putting results into dataframe")
+        ridge_performance_test = calculate_performance_metrics(y_test, pred_ridge)
+        ridge_performance_train = calculate_performance_metrics(y_test, pred_ridge)
+
+        train_results = pd.DataFrame.from_dict(
+            ridge_performance_train, orient="index"
+        ).reset_index()
+        test_results = pd.DataFrame.from_dict(
+            ridge_performance_test, orient="index"
+        ).reset_index()
+
+        train_results.columns = ["item", "value"]
+        test_results.columns = ["item", "value"]
+
+        Saver.save_csv(test_results, "ridge_regression_test_results", "modelling")
+        Saver.save_csv(train_results, "ridge_regression_train_results", "modelling")
+
+        logger.info("Plotting prediction and results")
+        plt.plot(np.arange(len(pred_ridge)), pred_ridge, label="Prediction")
+        plt.plot(np.arange(len(y_test)), y_test, label="actual")
+        plt.legend()
+        plt.title("Ridge Regression Out-of-Sample Forecast")
+        Saver.save_plots("ridge_regression_prediction_out_of_sample")
+        plt.clf()
+
+        plt.plot(np.arange(len(pred_ridge_train)), pred_ridge_train, label="Prediction")
+        plt.plot(np.arange(len(y_train)), y_train, label="actual")
+        plt.legend()
+        plt.title("Ridge Regression In-Sample Prediction")
+        Saver.save_plots("ridge_regression_prediction_in_sample")
+        plt.clf()
+
+        logger.info("Getting the coefficient from ridge regressions")
+        ridge_coefficients = ridge.coef_
+        ridge_features = X_train.columns
+
+        ridge_coef_df = pd.DataFrame(
+            {"columns": ridge_features, "coefficients": ridge_coefficients}
+        )
+        Saver.save_csv(ridge_coef_df, "ridge_regression_coefficients", "modelling")
+
+        logger.info("Creating tuple list for logging purposes")
+        importance_list_ridge = [
+            (abs(coef), feature)
+            for coef, feature in zip(ridge_coefficients, ridge_features)
+        ]
+        importance_list_ridge.sort(reverse=True)
+        for importance, feature in importance_list_ridge:
+            logger.debug(f"Coefficient for {feature} is [{round(importance,5)}]")
+
     def _lasso_regression(self):
         logger.info("Get training and testing data")
         X_train, y_train, X_test, y_test = self._get_data()
