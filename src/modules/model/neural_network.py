@@ -7,8 +7,6 @@ import pandas as pd
 import tensorflow as tf
 from keras.layers import LSTM, Dense
 from keras.models import Sequential
-from sklearn.linear_model import Lasso, LassoCV, LinearRegression, Ridge, RidgeCV
-from sklearn.model_selection import TimeSeriesSplit
 
 from src.modules.base import Module
 from src.utils.model_measurement import calculate_performance_metrics
@@ -27,8 +25,9 @@ class NeuralNetworkModel(Module):
         clean_scaled_data = pd.read_csv("data/processed/scaled_cleaned_data.csv")
 
         logger.debug("Running the LSTM model for difference structure")
-        lstm_y_pred_test = []
         for model_type in [1, 2, 3]:
+            lstm_y_pred_test_list = []
+            y_test_list = []
             for num_interval, incremental_trading_day in enumerate(
                 np.arange(
                     0,
@@ -52,14 +51,19 @@ class NeuralNetworkModel(Module):
                     clean_scaled_data,
                 )
                 logger.info(f"Use LSTM model type {model_type} for al price prediction")
-                results_in_time_interval = self._run_lstm_model(
+                results_in_time_interval, y_test_in_interval = self._run_lstm_model(
                     model_type, X_train, y_train, X_test, y_test
                 )
 
                 logger.info(
                     "Appending model prediction results with in the time interval to prediction results list"
                 )
-                lstm_y_pred_test.append(results_in_time_interval)
+                lstm_y_pred_test_list.append(results_in_time_interval)
+                y_test_list.append(y_test_in_interval)
+
+            logger.info("Concatenate all lists to generate final predicted time series")
+            lstm_y_pred_test = np.concatenate(lstm_y_pred_test_list)
+            y_test_all = np.concatenate(y_test_list)
 
             logger.info("Making prediction plots")
             plt.plot(
@@ -67,7 +71,7 @@ class NeuralNetworkModel(Module):
                 lstm_y_pred_test,
                 label=f"model_structure_type_{model_type}",
             )
-            plt.plot(np.arange(len(y_test)), y_test, label="actual")
+            plt.plot(np.arange(len(y_test_all)), y_test_all, label="actual")
             plt.legend()
             plt.title(f"LSTM Out-of-Sample Forecasts For Structure Type {model_type}")
             Saver.save_plots(f"lstm_type_{model_type}_test_prediction_out_of_sample")
@@ -83,7 +87,7 @@ class NeuralNetworkModel(Module):
 
             logger.info("Give model performance metrics")
             lstm_performance_test = calculate_performance_metrics(
-                y_test, lstm_y_pred_test
+                y_test_all, lstm_y_pred_test
             )
 
             logger.info("Convert results to dataframe and save it")
@@ -115,7 +119,7 @@ class NeuralNetworkModel(Module):
         lstm_predictions_test = model.predict(X_test)
         results_in_time_interval = [i[0] for i in lstm_predictions_test]
 
-        return results_in_time_interval
+        return results_in_time_interval, y_test
 
     def _get_lstm_model(slef, type):
         if type == 1:
@@ -155,7 +159,7 @@ class NeuralNetworkModel(Module):
         X_train = training_df.drop(["AL_PRICE"], axis=1)
         y_train = training_df["AL_PRICE"]
         X_test = testing_df.drop(["AL_PRICE"], axis=1)
-        y_test = testing_df["AL_PRICE"]
+        y_test = list(testing_df["AL_PRICE"])
 
         logger.info("Converting to tensors, except for y_test")
         X_train = tf.convert_to_tensor(X_train.to_numpy())
