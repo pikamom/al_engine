@@ -63,7 +63,9 @@ class LinearModel(Module):
         train_results = pd.DataFrame.from_dict(
             lasso_performance_train, orient="index"
         ).reset_index()
-        test_results = pd.DataFrame.from_dict(lasso_performance_test, orient="index").reset_index()
+        test_results = pd.DataFrame.from_dict(
+            lasso_performance_test, orient="index"
+        ).reset_index()
 
         train_results.columns = ["item", "value"]
         test_results.columns = ["item", "value"]
@@ -99,14 +101,20 @@ class LinearModel(Module):
         pred_linear_train = linear.predict(X_train)
 
         logger.info("Calculating performances metrics")
-        linear_train_performance = calculate_performance_metrics(y_train, pred_linear_train)
-        linear_test_performance = calculate_performance_metrics(y_test, pred_linear_test)
+        linear_train_performance = calculate_performance_metrics(
+            y_train, pred_linear_train
+        )
+        linear_test_performance = calculate_performance_metrics(
+            y_test, pred_linear_test
+        )
 
         logger.info("Putting results into dataframe")
         train_results = pd.DataFrame.from_dict(
             linear_train_performance, orient="index"
         ).reset_index()
-        test_results = pd.DataFrame.from_dict(linear_test_performance, orient="index").reset_index()
+        test_results = pd.DataFrame.from_dict(
+            linear_test_performance, orient="index"
+        ).reset_index()
         train_results.columns = ["item", "value"]
         test_results.columns = ["item", "value"]
 
@@ -126,7 +134,9 @@ class LinearModel(Module):
         Saver.save_plots("linear_regression_prediction_out_of_sample")
         plt.clf()
 
-        plt.plot(np.arange(len(pred_linear_train)), pred_linear_train, label="Prediction")
+        plt.plot(
+            np.arange(len(pred_linear_train)), pred_linear_train, label="Prediction"
+        )
         plt.plot(np.arange(len(y_train)), y_train, label="actual")
         plt.legend()
         plt.title("Linear Regression In-Sample Prediction")

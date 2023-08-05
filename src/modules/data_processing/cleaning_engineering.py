@@ -198,7 +198,9 @@ class CleanEngineer(Module):
         Saver.save_plots("acc_stock_vol")
         plt.clf()
 
-        logger.debug("Impute the missing values using Rolling Window Method(Linear Interpolation")
+        logger.debug(
+            "Impute the missing values using Rolling Window Method(Linear Interpolation"
+        )
         df_merged["ACC_OPEN"] = df_merged["ACC_OPEN"].interpolate(method="linear")
         df_merged["ACC_CLOSE"] = df_merged["ACC_CLOSE"].interpolate(method="linear")
         df_merged["ACC_VOLUME"] = df_merged["ACC_VOLUME"].interpolate(method="linear")
@@ -220,7 +222,9 @@ class CleanEngineer(Module):
 
         logger.debug("Generating percentage change in ACC stock price...")
         df_merged["ACC_CHANGE_WITHIN_A_DAY"] = (
-            (df_merged["ACC_CLOSE"] - df_merged["ACC_OPEN"]) / df_merged["ACC_OPEN"] * 100
+            (df_merged["ACC_CLOSE"] - df_merged["ACC_OPEN"])
+            / df_merged["ACC_OPEN"]
+            * 100
         )
         df_merged["ACC_CHANGE_ACROSS_DAYS"] = df_merged["ACC_CLOSE"].pct_change() * 100
 
@@ -244,8 +248,12 @@ class CleanEngineer(Module):
 
     def _extract_metal_price(self, metal: str) -> Dict:
         all_metal_futures = pd.read_csv("data/raw/futures prices.csv")
-        all_metal_futures["DATE"] = pd.to_datetime(all_metal_futures["date"], format="%d/%m/%Y")
-        all_metal_futures = all_metal_futures.drop(["TRADINGDAY", "id", "Unnamed: 0"], axis=1)
+        all_metal_futures["DATE"] = pd.to_datetime(
+            all_metal_futures["date"], format="%d/%m/%Y"
+        )
+        all_metal_futures = all_metal_futures.drop(
+            ["TRADINGDAY", "id", "Unnamed: 0"], axis=1
+        )
         metal_prices = all_metal_futures[
             all_metal_futures.INSTRUMENTID.str.startswith(metal)
         ].reset_index()
@@ -255,7 +263,9 @@ class CleanEngineer(Module):
             metal_prices["exec_year"] + "-" + metal_prices["exec_month"] + "-" + "15"
         )
         metal_prices["exec_date"] = pd.to_datetime(metal_prices["exec_date"])
-        metal_prices["exec_begin_date"] = metal_prices["exec_date"] - pd.DateOffset(months=1)
+        metal_prices["exec_begin_date"] = metal_prices["exec_date"] - pd.DateOffset(
+            months=1
+        )
         metal_prices = metal_prices[
             (metal_prices["DATE"] > metal_prices["exec_begin_date"])
             & (metal_prices["DATE"] <= metal_prices["exec_date"])
@@ -265,9 +275,9 @@ class CleanEngineer(Module):
             .sort_values("DATE")
             .drop(["exec_year", "exec_month", "exec_date", "exec_begin_date"], axis=1)
         )
-        metal_prices = metal_prices[metal_prices.SETTLEMENTPRICE.isnull() == False].reset_index(
-            drop=True
-        )
+        metal_prices = metal_prices[
+            metal_prices.SETTLEMENTPRICE.isnull() == False
+        ].reset_index(drop=True)
         metal_prices = metal_prices[["DATE", "SETTLEMENTPRICE"]]
 
         return metal_prices

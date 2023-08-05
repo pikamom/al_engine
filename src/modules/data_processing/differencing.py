@@ -34,7 +34,9 @@ class Differencing(Module):
         ]
         logger.debug(f"Selected  columns for differencing are: {columns_to_difference}")
 
-        logger.debug("Take 1st Order Differncing on chosen columns and append back other columns")
+        logger.debug(
+            "Take 1st Order Differncing on chosen columns and append back other columns"
+        )
         differenced_scaled_cleaned_data = (
             scaled_cleaned_data[columns_to_difference].copy().diff().dropna()
         )
@@ -53,5 +55,7 @@ class Differencing(Module):
         )
 
         Saver.save_csv(
-            differenced_scaled_cleaned_data, "differenced_scaled_cleaned_data", "processed"
+            differenced_scaled_cleaned_data,
+            "differenced_scaled_cleaned_data",
+            "processed",
         )

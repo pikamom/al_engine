@@ -20,9 +20,9 @@ class EDA(Module):
 
     def run(self):
         logger.info("Reading in cleaned dataframe")
-        scaled_cleaned_data = pd.read_csv("data/processed/scaled_cleaned_data.csv").set_index(
-            "DATE"
-        )
+        scaled_cleaned_data = pd.read_csv(
+            "data/processed/scaled_cleaned_data.csv"
+        ).set_index("DATE")
 
         logger.info("Giving a line plot on all features")
         fig = px.line(

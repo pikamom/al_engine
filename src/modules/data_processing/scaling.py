@@ -22,10 +22,14 @@ class Scaling(Module):
         logger.info("Starting min-max scaling process")
         scaler = MinMaxScaler()
 
-        logger.debug("Fit and transform the explainary variables dataframe with the scaler")
+        logger.debug(
+            "Fit and transform the explainary variables dataframe with the scaler"
+        )
         copy_clean_df = clean_df.copy()
         copy_clean_df = copy_clean_df.set_index("DATE")
-        scaled_df = pd.DataFrame(scaler.fit_transform(copy_clean_df), columns=copy_clean_df.columns)
+        scaled_df = pd.DataFrame(
+            scaler.fit_transform(copy_clean_df), columns=copy_clean_df.columns
+        )
         scaled_df["DATE"] = clean_df["DATE"]
 
         Saver.save_csv(scaled_df, "scaled_cleaned_data", "processed")

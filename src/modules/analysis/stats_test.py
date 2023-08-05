@@ -32,9 +32,9 @@ class StatsTest(Module):
 
     def _t_test(self):
         logger.info("Reading in cleaned dataframe")
-        scaled_cleaned_data = pd.read_csv("data/processed/scaled_cleaned_data.csv").set_index(
-            "DATE"
-        )
+        scaled_cleaned_data = pd.read_csv(
+            "data/processed/scaled_cleaned_data.csv"
+        ).set_index("DATE")
 
         logger.info("Use t-test to test the coefficients' significance")
         corr_matrix = scaled_cleaned_data.corr()
@@ -117,7 +117,9 @@ class StatsTest(Module):
                 )
                 p_value = results[lag][0]["ssr_ftest"][1]
 
-                logger.debug(f"P-value is [{p_value}] and the best p value is [{best_p_value}]")
+                logger.debug(
+                    f"P-value is [{p_value}] and the best p value is [{best_p_value}]"
+                )
                 if p_value > best_p_value:
                     break
 
@@ -125,7 +127,9 @@ class StatsTest(Module):
                 best_lag = lag
                 best_p_value = p_value
 
-            logger.debug(f"Best lags / p-value for variable [{var}] is {(best_lag, best_p_value)}")
+            logger.debug(
+                f"Best lags / p-value for variable [{var}] is {(best_lag, best_p_value)}"
+            )
             best_lags[var] = (best_lag, best_p_value)
 
         granger_causality_results = pd.DataFrame(best_lags).T.reset_index()
@@ -135,13 +139,15 @@ class StatsTest(Module):
             "best_p_value",
         ]
         Saver.save_csv(
-            granger_causality_results, "granger_causality_test_on_diff_scaled_data", "results"
+            granger_causality_results,
+            "granger_causality_test_on_diff_scaled_data",
+            "results",
         )
 
     def _adf_test(self):
-        scaled_cleaned_data = pd.read_csv("data/processed/scaled_cleaned_data.csv").set_index(
-            "DATE"
-        )
+        scaled_cleaned_data = pd.read_csv(
+            "data/processed/scaled_cleaned_data.csv"
+        ).set_index("DATE")
 
         p_values_list = []
         for column in scaled_cleaned_data.columns:

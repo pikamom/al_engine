@@ -20,7 +20,9 @@ class PrepareTraining(Module):
         scaled_cleaned_data = pd.read_csv("data/processed/scaled_cleaned_data.csv")
 
         logger.info("Creating training dataframe for non-shifted al price")
-        training_unshifted, testing_unshifted = self._split_train_test_data(scaled_cleaned_data)
+        training_unshifted, testing_unshifted = self._split_train_test_data(
+            scaled_cleaned_data
+        )
 
         logger.debug(
             f'Creating shifted price dataframe with shift = [{self.settings["model"]["data"]["shift"]}]'
@@ -42,6 +44,10 @@ class PrepareTraining(Module):
         logger.debug(
             f'Taking training dataframe to be trading days before [{self.settings["model"]["data"]["training_end_date"]}]'
         )
-        training_df = data[data["DATE"] < self.settings["model"]["data"]["training_end_date"]]
-        testing_df = data[data["DATE"] >= self.settings["model"]["data"]["training_end_date"]]
+        training_df = data[
+            data["DATE"] < self.settings["model"]["data"]["training_end_date"]
+        ]
+        testing_df = data[
+            data["DATE"] >= self.settings["model"]["data"]["training_end_date"]
+        ]
         return training_df, testing_df

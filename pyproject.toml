@@ -6,3 +6,6 @@ description = "Thesis Repo For Student XGZZ9"
 
 [tool.black]
 line-length=88
+
+[tool.isort]
+profile = "black"
