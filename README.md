@@ -1,6 +1,6 @@
 ## Aluminium Pricing and Purchase Decisioning Engine
 
-Code Repo For UCL BA Student Number XGZZ9 Final Thesis
+Code Repo For UCL BA Student Number XGGZ9 Final Thesis
 
 ### Section 1 - Overview
 
@@ -19,8 +19,14 @@ The main aim is to predict Aluminium pricing and utilise the decision engine to 
 pip install -r requirements.txt
 ```
 
+### Section 3 - Getting the raw data
+The raw data is provided as a zip file with passcode specified in the thesis in the following folder (as the repo will be open to public and to avoid the data being used outside of the purpose of this thesis):
 
-### Section 3 - Running the Code
+> data/raw/raw_data.zip
+
+
+
+### Section 4 - Running the Code
 The project had been set-up in a way that CLI tool is provided to access different modules, an example is shown below
 
 > syntax: python -m src.run {orchestrator name}
@@ -37,7 +43,7 @@ The list of available orchestrators are:
 - `analysis`: conduct statistical analysis and produce EDA plots
 - `model`: build all models discussed in the thesis, including linear ones and LSTM. make sure `preprocess` is run before running this step.
 
-### Section 4 - Results:
+### Section 5 - Results:
 
 Results are stored automatically within the project folders:
 - data folder consists of all csv outputs from the pipeline run

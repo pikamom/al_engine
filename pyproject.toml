@@ -1,8 +1,8 @@
 [project]
 name = "al_engine"
 version = "0.0.1"
-authors = ["XGZZ9"]
-description = "Thesis Repo For Student XGZZ9"
+authors = ["XGGZ9"]
+description = "Thesis Repo For Student XGGZ9"
 
 [tool.black]
 line-length=88
