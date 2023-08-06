@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import Lasso, LassoCV, LinearRegression, Ridge, RidgeCV
-from sklearn.model_selection import TimeSeriesSplit
+from sklearn.model_selection import KFold
 
 from src.modules.base import Module
 from src.utils.model_measurement import calculate_performance_metrics
@@ -40,8 +40,8 @@ class LinearModel(Module):
         alphas_ridge = 10 ** np.linspace(-5, 2, 100)
 
         logger.debug(f"Define the range of alpha values to test is {alphas_ridge}")
-        logger.info("Splitting the data into 5 folds for validation and grid search")
-        tscv_ridge = TimeSeriesSplit(n_splits=5)
+        logger.info("Splitting the data into 20 folds for validation and grid search")
+        tscv_ridge = KFold(n_splits=20)
 
         logger.info("Fit the ridge CV")
         ridge_cv = RidgeCV(alphas=alphas_ridge, cv=tscv_ridge)
@@ -61,7 +61,9 @@ class LinearModel(Module):
 
         logger.info("Calculate performance metrics and Putting results into dataframe")
         ridge_performance_test = calculate_performance_metrics(y_test, pred_ridge)
-        ridge_performance_train = calculate_performance_metrics(y_test, pred_ridge)
+        ridge_performance_train = calculate_performance_metrics(
+            y_train, pred_ridge_train
+        )
 
         train_results = pd.DataFrame.from_dict(
             ridge_performance_train, orient="index"
@@ -117,8 +119,8 @@ class LinearModel(Module):
 
         alphas = 10 ** np.linspace(-5, 2, 100)
         logger.debug(f"Define the range of alpha values to test is {alphas}")
-        logger.info("Splitting the data into 5 folds for validation and grid search")
-        tscv = TimeSeriesSplit(n_splits=5)
+        logger.info("Splitting the data into 20 folds for validation and grid search")
+        tscv = KFold(n_splits=20)
 
         logger.info("Fit the lassco CV")
         lasso_cv = LassoCV(alphas=alphas, cv=tscv)
@@ -138,7 +140,9 @@ class LinearModel(Module):
 
         logger.info("Calculate performance metrics and Putting results into dataframe")
         lasso_performance_test = calculate_performance_metrics(y_test, pred_lasso)
-        lasso_performance_train = calculate_performance_metrics(y_test, pred_lasso)
+        lasso_performance_train = calculate_performance_metrics(
+            y_train, pred_lasso_train
+        )
 
         train_results = pd.DataFrame.from_dict(
             lasso_performance_train, orient="index"
