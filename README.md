@@ -6,8 +6,8 @@ Code Repo For UCL BA Student Number XGZZ9 Final Thesis
 
 The thesis evolves around building an engine consisting of the following two sections:
 
-1. Aluminium Pricing
-2. Purchase Decisioning
+1. Aluminium Pricing (What this repo mainly contains)
+2. Purchase Decisioning (This is included in notebooks/Procurment_Decision.ipynb where comparison betwen raw material cost with/without the purchase decision guided by aluminium pricing engine)
 
 The main aim is to predict Aluminium pricing and utilise the decision engine to save raw material costs for a Aluminum door factory based in China. Refer to the submitted paper for more detailed discussion.
 
