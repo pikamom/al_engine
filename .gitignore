@@ -5,10 +5,16 @@
 *__pycache__*
 *.pyc
 
+# data
 *.DS_Store
 .DS_Store
 *.csv
 *.xlsx
+
+# notebook check point
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+ipynb_checkpoints/
 
 # logging folder
 logs/
