@@ -9,8 +9,6 @@
 .DS_Store
 *.csv
 *.xlsx
-*.ipynb
-*.zip
 
 # logging folder
 logs/
