@@ -1,3 +1,5 @@
+Copyright (c) 2023 by UCL BA Student XGGZ9. All rights reserved.
+
 ## Aluminium Pricing and Purchase Decisioning Engine
 
 Code Repo For UCL BA Student Number XGGZ9 Final Thesis
